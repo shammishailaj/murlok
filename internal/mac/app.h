@@ -1,0 +1,24 @@
+#ifndef app_h
+#define app_h
+
+#import <Cocoa/Cocoa.h>
+
+typedef void (^PlatformHandler)(id, NSString *);
+
+@interface App
+    : NSObject <NSApplicationDelegate, NSUserNotificationCenterDelegate>
+@property NSMutableDictionary<NSString *, PlatformHandler> *handlers;
+
++ (instancetype)current;
+- (instancetype)init;
+- (void)handle:(NSString *)method withHandler:(MacRPCHandler)handler;
+- (void) return:(NSString *)returnID
+     withOutput:(id)out
+       andError:(NSString *)err;
+- (void)run:(id)in return:(NSString *)returnID;
+@end
+
+void platformCall(char *rawcall);
+void defer(NSString *returnID, dispatch_block_t block);
+
+#endif /* app_h */

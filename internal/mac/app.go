@@ -6,7 +6,7 @@ package mac
 #cgo CFLAGS: -x objective-c -fobjc-arc
 #cgo LDFLAGS: -framework Cocoa
 #cgo LDFLAGS: -framework WebKit
-#include "cocoa.h"
+#include "app.h"
 */
 import "C"
 import (
