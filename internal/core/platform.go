@@ -8,11 +8,12 @@ import (
 	"github.com/google/uuid"
 )
 
-// PlatformHandler represents the handler that will perform platform calls.
+// PlatformHandler represents the handler that will perform underlying platform
+// calls.
 type PlatformHandler func(call string) error
 
-// Platform is a struct that provides remote procedure calls to the configured
-// platform.
+// Platform is a struct that provides remote procedure calls from Go to the
+// underlying platform.
 type Platform struct {
 	// The function that performs plaform calls.
 	Handler PlatformHandler
