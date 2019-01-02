@@ -15,9 +15,13 @@ import (
 	"github.com/maxence-charriere/murlok/internal/core"
 )
 
-var platform = core.Platform{
-	Handler: platformCall,
-}
+var (
+	platform = core.Platform{
+		Handler: platformCall,
+	}
+
+	golang core.Go
+)
 
 func platformCall(call string) error {
 	ccall := C.CString(call)
@@ -33,4 +37,14 @@ func platformReturn(returnID, out, err *C.char) {
 		C.GoString(out),
 		C.GoString(err),
 	)
+}
+
+//export goCall
+func goCall(ccall *C.char) {
+	call := C.GoString(ccall)
+
+	err := golang.Call(call)
+	if err != nil {
+		panic(err)
+	}
 }

@@ -29,7 +29,7 @@
   return self;
 }
 
-- (void)handle:(NSString *)method withHandler:(MacRPCHandler)handler {
+- (void)handle:(NSString *)method withHandler:(PlatformHandler)handler {
   self.handlers[method] = handler;
 }
 
@@ -44,22 +44,45 @@
   platformReturn(creturnID, cout, cerr);
 }
 
+- (void)goCall:(NSString *)method withInput:(id)in {
+  NSMutableDictionary *call = [[NSMutableDictionary alloc] init];
+  call[@"Method"] = method;
+  call[@"In"] = in;
+
+  NSString *callStr = [JSONEncoder encode:call];
+  goCall((char *)callStr.UTF8String);
+}
+
 - (void)run:(id)in return:(NSString *)returnID {
   [NSApp run];
   [self return:returnID withOutput:nil andError:nil];
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+  [self goCall:@"app.OnRun" withInput:nil];
+}
+
+- (BOOL)applicationShouldHandleReopen:(NSApplication *)sender
+                    hasVisibleWindows:(BOOL)flag {
+  NSDictionary *in = @{
+    @"HasVisibleWindows" : @(flag),
+  };
+
+  [self goCall:@"app.OnReopen" withInput:in];
+  return YES;
 }
 @end
 
 void platformCall(char *rawcall) {
   NSDictionary *call =
-      [JSONDecoder decode:[NSString stringWithUTF8String:rawCall]];
+      [JSONDecoder decode:[NSString stringWithUTF8String:rawcall]];
 
   NSString *method = call[@"Method"];
   id in = call[@"In"];
   NSString *returnID = call[@"ReturnID"];
 
   @try {
-    App *app = [app current];
+    App *app = [App current];
     PlatformHandler handler = app.handlers[method];
 
     if (handler == nil) {

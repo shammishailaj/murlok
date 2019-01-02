@@ -11,10 +11,11 @@ typedef void (^PlatformHandler)(id, NSString *);
 
 + (instancetype)current;
 - (instancetype)init;
-- (void)handle:(NSString *)method withHandler:(MacRPCHandler)handler;
+- (void)handle:(NSString *)method withHandler:(PlatformHandler)handler;
 - (void) return:(NSString *)returnID
      withOutput:(id)out
        andError:(NSString *)err;
+- (void)goCall:(NSString *)method withInput:(id)in;
 - (void)run:(id)in return:(NSString *)returnID;
 @end
 
