@@ -13,8 +13,8 @@ type Backend struct {
 	// The allowed hosts.
 	AllowedHosts map[string]struct{}
 
-	// The function used to create a default view.
-	NewDefaultView func()
+	// The function used to create a default window.
+	NewDefaultWindow func()
 
 	// The function called before the app is closed.
 	Finalize func()
@@ -36,7 +36,7 @@ func (b *Backend) Call(method string, out, in interface{}) error {
 }
 
 func onRun(in map[string]interface{}) {
-	backend.NewDefaultView()
+	backend.NewDefaultWindow()
 }
 
 func onReopen(in map[string]interface{}) {

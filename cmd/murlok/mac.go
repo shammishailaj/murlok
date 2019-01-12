@@ -342,12 +342,17 @@ func (pkg *MacPackage) buildExecutable(ctx context.Context) error {
 
 	args := []string{
 		"go", "build",
-		"-ldflags", "-s -X github.com/maxence-charriere/murlok.target=macos",
 		"-o", pkg.tmpExecutable,
+	}
+
+	ldflags := []string{
+		"-s",
+		"-X", "github.com/maxence-charriere/murlok.target=macos",
 	}
 
 	if pkg.Verbose {
 		args = append(args, "-v")
+		ldflags = append(ldflags, "-X", "github.com/maxence-charriere/murlok.verbose=true")
 	}
 
 	if pkg.Force {
@@ -358,6 +363,7 @@ func (pkg *MacPackage) buildExecutable(ctx context.Context) error {
 		args = append(args, "-race")
 	}
 
+	args = append(args, "-ldflags", strings.Join(ldflags, " "))
 	args = append(args, pkg.Sources)
 
 	if err := execute(ctx, args[0], args[1:]...); err != nil {

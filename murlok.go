@@ -21,8 +21,8 @@ var (
 	// DefaultLogger is the logger used to write logs.
 	DefaultLogger Logger = log.Printf
 
-	// DefaultView describes the appearance of the default web view.
-	DefaultView View
+	// DefaultWindow describes the appearance of the default window.
+	DefaultWindow Window
 
 	// Finalize is the function called before the app is closed. It can be set
 	// to perform any final cleanup.
@@ -38,6 +38,8 @@ var (
 	allowedHosts = make(map[string]struct{})
 	backend      Backend
 	target       string
+	verbose      string
+	whenDebug    = func(func()) {}
 )
 
 // Backend is the interface that describes a backend that handles the platform
@@ -74,6 +76,20 @@ func Logf(format string, args ...interface{}) {
 	DefaultLogger(format, args...)
 }
 
+// EnableDebug enables or disable debug mode.
+func EnableDebug(v bool) {
+	if v {
+		whenDebug = func(f func()) { f() }
+	} else {
+		whenDebug = func(func()) {}
+	}
+}
+
+// WhenDebug calls the given function when debug mode is enabled.
+func WhenDebug(f func()) {
+	whenDebug(f)
+}
+
 // AllowHosts authorized url with the given hosts to be loaded in web views.
 // Unauthorized url are loaded in the operating system default browser.
 func AllowHosts(hosts ...string) {
@@ -84,6 +100,9 @@ func AllowHosts(hosts ...string) {
 
 // Run runs the application and shows a web view that loads the given url
 func Run(url string) {
+	DefaultWindow.URL = url
+	EnableDebug(verbose == "true")
+
 	if murlokBuild := os.Getenv("MURLOK_BUILD"); len(murlokBuild) != 0 {
 		build(murlokBuild)
 		return
@@ -136,11 +155,13 @@ func build(path string) {
 	}
 }
 
-func newDefaultView() {
+func newDefaultWindow() {
+	WhenDebug(func() {
+		b, _ := json.MarshalIndent(DefaultWindow, "", "    ")
+		Log("creating window", string(b))
+	})
 
-	Log("gonna create window")
-
-	if err := backend.Call("windows.New", nil, DefaultView); err != nil {
+	if err := backend.Call("windows.New", nil, DefaultWindow); err != nil {
 		Log("creating view failed:", err)
 	}
 }

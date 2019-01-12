@@ -6,10 +6,10 @@ func newBackend(host string) Backend {
 	switch target {
 	case "macos":
 		return &mac.Backend{
-			Host:           host,
-			AllowedHosts:   allowedHosts,
-			NewDefaultView: newDefaultView,
-			Finalize:       finalize,
+			Host:             host,
+			AllowedHosts:     allowedHosts,
+			NewDefaultWindow: newDefaultWindow,
+			Finalize:         finalize,
 		}
 
 	default:
