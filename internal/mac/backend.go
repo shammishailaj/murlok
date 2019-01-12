@@ -2,28 +2,28 @@
 
 package mac
 
-import (
-	"fmt"
-)
+var backend *Backend
 
 // Backend represents a backend that performs MacOS operations. It implements
 // the murlok.Backend interface.
 type Backend struct {
+	// The local server host.
+	Host string
+
 	// The allowed hosts.
-	AllowedHosts []string
+	AllowedHosts map[string]struct{}
 
-	// The views background color.
-	BackgroundColor string
+	// The function used to create a default view.
+	NewDefaultView func()
 
-	// Enables views frosted background.
-	FrostedBackground bool
-
-	// The function called when the app terminates.
-	Close func() error
+	// The function called before the app is closed.
+	Finalize func()
 }
 
 // Run launches NSApplication. It satisfies the murlok.Backend interface.
 func (b *Backend) Run() error {
+	backend = b
+
 	golang.Handle("app.OnRun", onRun)
 	golang.Handle("app.OnReopen", onReopen)
 
@@ -36,10 +36,11 @@ func (b *Backend) Call(method string, out, in interface{}) error {
 }
 
 func onRun(in map[string]interface{}) {
-	fmt.Println("running")
+	backend.NewDefaultView()
 }
 
 func onReopen(in map[string]interface{}) {
-	hasVisibleWindows := in["HasVisibleWindows"].(bool)
-	fmt.Println("reopened - has windows:", hasVisibleWindows)
+	if hasVisibleWindows := in["HasVisibleWindows"].(bool); !hasVisibleWindows {
+		backend.Finalize()
+	}
 }

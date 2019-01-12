@@ -93,7 +93,7 @@ func run(ctx context.Context, args []string) {
 		Name:    "mac run",
 		Args:    args,
 		Usage:   "[options...] [package]",
-		Sources: []conf.Source{conf.NewEnvSource("GOAPP", os.Environ()...)},
+		Sources: []conf.Source{conf.NewEnvSource("MURLOK", os.Environ()...)},
 	}
 
 	_, args = conf.LoadWith(&c, ld)
@@ -128,7 +128,7 @@ func clean(ctx context.Context, args []string) {
 		Name:    "mac clean",
 		Args:    args,
 		Usage:   "[options...] [package]",
-		Sources: []conf.Source{conf.NewEnvSource("GOAPP", os.Environ()...)},
+		Sources: []conf.Source{conf.NewEnvSource("MURLOK", os.Environ()...)},
 	}
 
 	_, args = conf.LoadWith(&c, ld)
@@ -249,7 +249,7 @@ func (pkg *MacPackage) init() (err error) {
 	if pkg.tmpDir = os.Getenv("TMPDIR"); len(pkg.tmpDir) == 0 {
 		return errors.New("tmp dir not set")
 	}
-	pkg.tmpDir = filepath.Join(pkg.tmpDir, "goapp", execName)
+	pkg.tmpDir = filepath.Join(pkg.tmpDir, "MURLOK", execName)
 	pkg.tmpExecutable = filepath.Join(pkg.tmpDir, execName)
 
 	pkg.contentsDir = filepath.Join(pkg.Output, "Contents")
@@ -342,7 +342,7 @@ func (pkg *MacPackage) buildExecutable(ctx context.Context) error {
 
 	args := []string{
 		"go", "build",
-		"-ldflags", "-s -X github.com/murlokswarm/app.target=macos",
+		"-ldflags", "-s -X github.com/maxence-charriere/murlok.target=macos",
 		"-o", pkg.tmpExecutable,
 	}
 
@@ -563,7 +563,7 @@ func (pkg *MacPackage) Run(ctx context.Context) error {
 	}
 
 	if pkg.Verbose {
-		os.Setenv("GOAPP_DEBUG", "true")
+		os.Setenv("MURLOK_DEBUG", "true")
 	}
 
 	pkg.Log("running %s", pkg.name)

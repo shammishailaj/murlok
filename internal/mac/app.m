@@ -86,7 +86,8 @@ void platformCall(char *rawcall) {
     PlatformHandler handler = app.handlers[method];
 
     if (handler == nil) {
-      [NSException raise:@"not handled" format:@"%@ is not handled", method];
+      [NSException raise:@"not implemented"
+                  format:@"%@ is not implemented", method];
     }
 
     handler(in, returnID);

@@ -1,6 +1,6 @@
 package murlok
 
-// View is a struct that describes a webview.
+// View is a struct that describes a web view.
 type View struct {
 	// The url load when the view is created.
 	URL string
