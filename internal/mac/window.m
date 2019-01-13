@@ -65,15 +65,14 @@
   NSImageView *image = [NSImageView imageViewWithImage:icon];
   image.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSTextField *loading = [NSTextField labelWithString:@"100%"];
-  [loading setFont:[NSFont systemFontOfSize:21 weight:NSFontWeightThin]];
-  loading.translatesAutoresizingMaskIntoConstraints = NO;
-  self.loading = loading;
+  NSTextField *progress = [NSTextField labelWithString:@"100%"];
+  [progress setFont:[NSFont systemFontOfSize:21 weight:NSFontWeightThin]];
+  progress.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSView *box = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)];
   box.translatesAutoresizingMaskIntoConstraints = NO;
   [box addSubview:image];
-  [box addSubview:loading];
+  [box addSubview:progress];
 
   [box addConstraints:
            [NSLayoutConstraint
@@ -84,18 +83,18 @@
                                                image)]];
   [box addConstraints:
            [NSLayoutConstraint
-               constraintsWithVisualFormat:@"|[image(==32)]-[loading]|"
+               constraintsWithVisualFormat:@"|[image(==32)]-[progress]|"
                                    options:0
                                    metrics:nil
                                      views:NSDictionaryOfVariableBindings(
-                                               image, loading)]];
+                                               image, progress)]];
   [box addConstraints:
            [NSLayoutConstraint
-               constraintsWithVisualFormat:@"V:[loading]-4-|"
+               constraintsWithVisualFormat:@"V:[progress]-4-|"
                                    options:0
                                    metrics:nil
                                      views:NSDictionaryOfVariableBindings(
-                                               loading)]];
+                                               progress)]];
   [self.window.contentView addSubview:box];
 
   [self.window.contentView
@@ -114,6 +113,9 @@
                                           NSLayoutFormatAlignAllCenterY
                                   metrics:nil
                                     views:NSDictionaryOfVariableBindings(box)]];
+
+  self.loader = box;
+  self.loadingProgress = progress;
 }
 
 - (void)configureWebView {
@@ -125,7 +127,6 @@
   conf.userContentController = userContentController;
   conf.preferences.javaScriptCanOpenWindowsAutomatically = NO;
   conf.websiteDataStore = [WKWebsiteDataStore defaultDataStore];
-  conf.suppressesIncrementalRendering = YES;
 
   WKWebView *webView = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                           configuration:conf];
@@ -171,7 +172,7 @@
                        context:(void *)context {
 
   if ([keyPath isEqual:@"estimatedProgress"]) {
-    [self.loading
+    [self.loadingProgress
         setStringValue:[NSString
                            stringWithFormat:@"%.0f%%",
                                             self.webView.estimatedProgress *
@@ -215,14 +216,12 @@
 
 - (void)webView:(WKWebView *)webView
     didStartProvisionalNavigation:(WKNavigation *)navigation {
-  [self.loading setHidden:NO];
-  [self.webView setHidden:YES];
+  [self.loader setHidden:NO];
 }
 
 - (void)webView:(WKWebView *)webView
     didFinishNavigation:(WKNavigation *)navigation {
-  [self.webView setHidden:NO];
-  [self.loading setHidden:YES];
+  [self.loader setHidden:YES];
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController

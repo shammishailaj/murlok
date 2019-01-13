@@ -7,7 +7,8 @@
                                         WKUIDelegate, WKScriptMessageHandler>
 @property NSURL *defaultURL;
 @property(weak) WKWebView *webView;
-@property(weak) NSTextField *loading;
+@property(weak) NSView *loader;
+@property(weak) NSTextField *loadingProgress;
 
 + (void) new:(NSDictionary *)in return:(NSString *)returnID;
 - (void)setBackground:(NSString *)color frosted:(BOOL)frosted;
