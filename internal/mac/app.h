@@ -12,7 +12,7 @@ typedef void (^PlatformHandler)(id, NSString *);
 + (instancetype)current;
 - (instancetype)init;
 - (void)handle:(NSString *)method withHandler:(PlatformHandler)handler;
-- (void) return:(NSString *)returnID
++ (void) return:(NSString *)returnID
      withOutput:(id)out
        andError:(NSString *)err;
 - (void)goCall:(NSString *)method withInput:(id)in;
@@ -20,6 +20,6 @@ typedef void (^PlatformHandler)(id, NSString *);
 @end
 
 void platformCall(char *rawcall);
-void defer(NSString *returnID, dispatch_block_t block);
+void dispatch(NSString *returnID, dispatch_block_t block);
 
 #endif /* app_h */

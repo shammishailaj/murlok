@@ -1,6 +1,7 @@
 #include "app.h"
 #include "_cgo_export.h"
 #include "json.h"
+#include "window.h"
 
 @implementation App
 + (instancetype)current {
@@ -26,6 +27,11 @@
         return [self run:in return:returnID];
       }];
 
+  [self handle:@"windows.New"
+      withHandler:^(id in, NSString *returnID) {
+        return [Window new:in return:returnID];
+      }];
+
   return self;
 }
 
@@ -33,7 +39,7 @@
   self.handlers[method] = handler;
 }
 
-- (void) return:(NSString *)returnID
++ (void) return:(NSString *)returnID
      withOutput:(id)out
        andError:(NSString *)err {
 
@@ -55,7 +61,7 @@
 
 - (void)run:(id)in return:(NSString *)returnID {
   [NSApp run];
-  [self return:returnID withOutput:nil andError:nil];
+  [App return:returnID withOutput:nil andError:nil];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
@@ -97,4 +103,11 @@ void platformCall(char *rawcall) {
   }
 }
 
-void defer(NSString *returnID, dispatch_block_t block) {}
+void dispatch(NSString *returnID, dispatch_block_t block) {
+  @try {
+    block();
+  } @catch (NSException *exception) {
+    NSString *err = exception.reason;
+    platformReturn((char *)returnID.UTF8String, nil, (char *)err.UTF8String);
+  }
+}

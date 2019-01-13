@@ -41,6 +41,6 @@ func onRun(in map[string]interface{}) {
 
 func onReopen(in map[string]interface{}) {
 	if hasVisibleWindows := in["HasVisibleWindows"].(bool); !hasVisibleWindows {
-		backend.Finalize()
+		backend.NewDefaultWindow()
 	}
 }
