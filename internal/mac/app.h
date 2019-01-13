@@ -8,6 +8,8 @@ typedef void (^PlatformHandler)(id, NSString *);
 @interface App
     : NSObject <NSApplicationDelegate, NSUserNotificationCenterDelegate>
 @property NSMutableDictionary<NSString *, PlatformHandler> *handlers;
+@property NSString *localServerEndpoint;
+@property NSDictionary *allowedHosts;
 
 + (instancetype)current;
 - (instancetype)init;
@@ -15,8 +17,10 @@ typedef void (^PlatformHandler)(id, NSString *);
 + (void) return:(NSString *)returnID
      withOutput:(id)out
        andError:(NSString *)err;
-- (void)goCall:(NSString *)method withInput:(id)in;
-- (void)run:(id)in return:(NSString *)returnID;
++ (void)goCall:(NSString *)method withInput:(id)in;
++ (void)run:(id)in return:(NSString *)returnID;
++ (void)debug:(NSString *)format, ...;
++ (void)error:(NSString *)format, ...;
 @end
 
 void platformCall(char *rawcall);

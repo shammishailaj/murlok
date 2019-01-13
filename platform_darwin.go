@@ -2,14 +2,16 @@ package murlok
 
 import "github.com/maxence-charriere/murlok/internal/mac"
 
-func newBackend(host string) Backend {
+func newBackend(localServerEndpoint string) Backend {
 	switch target {
 	case "macos":
 		return &mac.Backend{
-			Host:             host,
-			AllowedHosts:     allowedHosts,
-			NewDefaultWindow: newDefaultWindow,
-			Finalize:         finalize,
+			AllowedHosts:        allowedHosts,
+			Finalize:            finalize,
+			LocalServerEndpoint: localServerEndpoint,
+			Logf:                Logf,
+			NewDefaultWindow:    newDefaultWindow,
+			WhenDebug:           WhenDebug,
 		}
 
 	default:

@@ -24,7 +24,7 @@
 
   [self handle:@"app.Run"
       withHandler:^(id in, NSString *returnID) {
-        return [self run:in return:returnID];
+        return [App run:in return:returnID];
       }];
 
   [self handle:@"windows.New"
@@ -50,7 +50,7 @@
   platformReturn(creturnID, cout, cerr);
 }
 
-- (void)goCall:(NSString *)method withInput:(id)in {
++ (void)goCall:(NSString *)method withInput:(id)in {
   NSMutableDictionary *call = [[NSMutableDictionary alloc] init];
   call[@"Method"] = method;
   call[@"In"] = in;
@@ -59,13 +59,17 @@
   goCall((char *)callStr.UTF8String);
 }
 
-- (void)run:(id)in return:(NSString *)returnID {
++ (void)run:(id)in return:(NSString *)returnID {
+  App *app = [App current];
+  app.localServerEndpoint = in[@"LocalServerEndpoint"];
+  app.allowedHosts = in[@"AllowedHosts"];
+
   [NSApp run];
   [App return:returnID withOutput:nil andError:nil];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-  [self goCall:@"app.OnRun" withInput:nil];
+  [App goCall:@"app.OnRun" withInput:nil];
 }
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)sender
@@ -74,8 +78,34 @@
     @"HasVisibleWindows" : @(flag),
   };
 
-  [self goCall:@"app.OnReopen" withInput:in];
+  [App goCall:@"app.OnReopen" withInput:in];
   return YES;
+}
+
++ (void)debug:(NSString *)format, ... {
+  va_list vl;
+  va_start(vl, format);
+
+  NSDictionary *in = @{
+    @"Msg" : [[NSString alloc] initWithFormat:format arguments:vl],
+  };
+
+  va_end(vl);
+
+  [App goCall:@"app.Debug" withInput:in];
+}
+
++ (void)error:(NSString *)format, ... {
+  va_list vl;
+  va_start(vl, format);
+
+  NSDictionary *in = @{
+    @"Msg" : [[NSString alloc] initWithFormat:format arguments:vl],
+  };
+
+  va_end(vl);
+
+  [App goCall:@"app.Error" withInput:in];
 }
 @end
 

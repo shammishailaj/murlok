@@ -8,9 +8,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"runtime"
 	"strings"
@@ -19,7 +19,11 @@ import (
 
 var (
 	// DefaultLogger is the logger used to write logs.
-	DefaultLogger Logger = log.Printf
+	DefaultLogger Logger = func(f string, a ...interface{}) {
+		fmt.Print("‣ ")
+		fmt.Printf(f, a...)
+		fmt.Println()
+	}
 
 	// DefaultWindow describes the appearance of the default window.
 	DefaultWindow Window
@@ -99,9 +103,17 @@ func AllowHosts(hosts ...string) {
 }
 
 // Run runs the application and shows a web view that loads the given url
-func Run(url string) {
-	DefaultWindow.URL = url
+func Run(rawurl string) {
 	EnableDebug(verbose == "true")
+
+	defaultWindowURL, err := url.Parse(rawurl)
+	if err != nil {
+		Log("parsing url failed:", err)
+		os.Exit(1)
+	}
+
+	DefaultWindow.URL = defaultWindowURL.String()
+	AllowHosts(defaultWindowURL.Host)
 
 	if murlokBuild := os.Getenv("MURLOK_BUILD"); len(murlokBuild) != 0 {
 		build(murlokBuild)
@@ -121,9 +133,10 @@ func Run(url string) {
 	}()
 
 	port := listener.Addr().(*net.TCPAddr).Port
-	host := fmt.Sprintf("http://localhost:%v", port)
-	backend = newBackend(host)
+	localServerEndpoint := fmt.Sprintf("http://localhost:%v", port)
+	AllowHosts(localServerEndpoint)
 
+	backend = newBackend(localServerEndpoint)
 	if err = backend.Run(); err != nil {
 		Logf("running %T failed: %s", backend, err)
 		os.Exit(1)

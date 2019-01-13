@@ -7,15 +7,13 @@
                                         WKUIDelegate, WKScriptMessageHandler>
 @property NSURL *defaultURL;
 @property(weak) WKWebView *webView;
+@property(weak) NSTextField *loading;
 
 + (void) new:(NSDictionary *)in return:(NSString *)returnID;
 - (void)setBackground:(NSString *)color frosted:(BOOL)frosted;
 - (void)configureWebView;
 - (void)configureTitleBar;
-// - (void)configWebview;
-// - (void)configTitlebar:(NSString *)title hidden:(BOOL)isHidden;
-// + (void)evalJS:(NSDictionary *)in return:(NSString *)returnID;
-// + (void)close:(NSDictionary *)in return:(NSString *)returnID;
+- (void)configureLoader;
 @end
 
 #endif /* window_h */
