@@ -168,13 +168,19 @@ func build(path string) {
 	}
 }
 
-func newDefaultWindow() {
+func newDefaultWindow(url string) {
 	WhenDebug(func() {
 		b, _ := json.MarshalIndent(DefaultWindow, "", "    ")
 		Log("creating window", string(b))
 	})
 
-	if err := backend.Call("windows.New", nil, DefaultWindow); err != nil {
+	c := DefaultWindow
+
+	if url != "" {
+		c.URL = url
+	}
+
+	if err := backend.Call("windows.New", nil, c); err != nil {
 		Log("creating view failed:", err)
 	}
 }

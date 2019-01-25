@@ -22,6 +22,10 @@
                       defer:NO];
     rawwin.minSize = NSMakeSize(360, 360);
 
+    if (![rawwin setFrameUsingName:url]) {
+      [rawwin center];
+    }
+
     Window *win = [[Window alloc] initWithWindow:rawwin];
     win.defaultURL = [NSURL URLWithString:url];
     rawwin.delegate = win;
@@ -31,6 +35,13 @@
     [win configureLoader];
     [win configureWebView];
     [win configureTitleBar];
+
+    if (NSApp.keyWindow != nil) {
+      NSRect bounds = NSApp.keyWindow.frame;
+      bounds.origin.x += 24;
+      bounds.origin.y -= 24;
+      [rawwin setFrame:bounds display:YES];
+    }
 
     [win showWindow:nil];
     [NSApp activateIgnoringOtherApps:YES];
@@ -241,6 +252,27 @@
   }
 
   decisionHandler(WKNavigationActionPolicyAllow);
+}
+
+- (WKWebView *)webView:(WKWebView *)webView
+    createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
+               forNavigationAction:(WKNavigationAction *)navigationAction
+                    windowFeatures:(WKWindowFeatures *)windowFeatures {
+
+  NSURL *url = navigationAction.request.URL;
+  App *app = [App current];
+  id allowedHost = app.allowedHosts[url.host];
+
+  if (allowedHost == nil) {
+    [[NSWorkspace sharedWorkspace] openURL:url];
+    return nil;
+  }
+
+  [App goCall:@"app.Windows.NewDefault"
+      withInput:@{
+        @"URL" : url.absoluteString,
+      }];
+  return nil;
 }
 
 - (void)webView:(WKWebView *)webView

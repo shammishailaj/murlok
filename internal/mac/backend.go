@@ -22,7 +22,7 @@ type Backend struct {
 	Logf func(string, ...interface{})
 
 	// The function used to create a default window.
-	NewDefaultWindow func()
+	NewDefaultWindow func(string)
 
 	// The function to execute debug scoped instructions.
 	WhenDebug func(func())
@@ -32,10 +32,11 @@ type Backend struct {
 func (b *Backend) Run() error {
 	backend = b
 
-	golang.Handle("app.OnRun", onRun)
-	golang.Handle("app.OnReopen", onReopen)
+	golang.Handle("app.Running", onRun)
+	golang.Handle("app.Reopened", onReopen)
 	golang.Handle("app.Debug", onDebug)
 	golang.Handle("app.Error", onError)
+	golang.Handle("app.Windows.NewDefault", onNewDefaultWindow)
 
 	return platform.Call("app.Run", nil, struct {
 		LocalServerEndpoint string
@@ -52,12 +53,12 @@ func (b *Backend) Call(method string, out, in interface{}) error {
 }
 
 func onRun(in map[string]interface{}) {
-	backend.NewDefaultWindow()
+	backend.NewDefaultWindow("")
 }
 
 func onReopen(in map[string]interface{}) {
 	if hasVisibleWindows := in["HasVisibleWindows"].(bool); !hasVisibleWindows {
-		backend.NewDefaultWindow()
+		backend.NewDefaultWindow("")
 	}
 }
 
@@ -69,4 +70,8 @@ func onDebug(in map[string]interface{}) {
 
 func onError(in map[string]interface{}) {
 	backend.Logf("%s", errors.Errorf("%s", in["Msg"]))
+}
+
+func onNewDefaultWindow(in map[string]interface{}) {
+	backend.NewDefaultWindow(in["URL"].(string))
 }
