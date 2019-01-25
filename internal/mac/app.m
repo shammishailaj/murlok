@@ -9,8 +9,8 @@
 
   @synchronized(self) {
     if (app == nil) {
-      app = [[App alloc] init];
       NSApplication *nsapp = [NSApplication sharedApplication];
+      app = [[App alloc] init];
       nsapp.delegate = app;
     }
   }
@@ -20,6 +20,10 @@
 
 - (instancetype)init {
   self = [super init];
+
+  self.menuBar = [[MenuBar alloc] init];
+  [self.menuBar mount];
+
   self.handlers = [NSMutableDictionary dictionaryWithCapacity:64];
 
   [self handle:@"app.Run"
@@ -106,6 +110,17 @@
   va_end(vl);
 
   [App goCall:@"app.Error" withInput:in];
+}
+
++ (NSString *)name {
+  NSBundle *mainBundle = [NSBundle mainBundle];
+  return mainBundle.infoDictionary[@"CFBundleName"];
+}
+
+- (void)murlok {
+  [[NSWorkspace sharedWorkspace]
+      openURL:
+          [NSURL URLWithString:@"https://github.com/maxence-charriere/murlok"]];
 }
 @end
 

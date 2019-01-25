@@ -13,6 +13,10 @@
 + (void) new:(NSDictionary *)in return:(NSString *)returnID;
 - (void)setBackground:(NSString *)color frosted:(BOOL)frosted;
 - (void)configureWebView;
+- (void)loadDefaultURL;
+- (void)zoomDefault;
+- (void)zoomIn;
+- (void)zoomOut;
 - (void)configureTitleBar;
 - (void)configureLoader;
 @end
