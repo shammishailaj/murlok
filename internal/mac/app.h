@@ -1,6 +1,7 @@
 #ifndef app_h
 #define app_h
 
+#include "menubar.h"
 #import <Cocoa/Cocoa.h>
 
 typedef void (^PlatformHandler)(id, NSString *);
@@ -10,6 +11,7 @@ typedef void (^PlatformHandler)(id, NSString *);
 @property NSMutableDictionary<NSString *, PlatformHandler> *handlers;
 @property NSString *localServerEndpoint;
 @property NSDictionary *allowedHosts;
+@property MenuBar *menuBar;
 
 + (instancetype)current;
 - (instancetype)init;
@@ -21,6 +23,7 @@ typedef void (^PlatformHandler)(id, NSString *);
 + (void)run:(id)in return:(NSString *)returnID;
 + (void)debug:(NSString *)format, ...;
 + (void)error:(NSString *)format, ...;
++ (NSString *)name;
 @end
 
 void platformCall(char *rawcall);
