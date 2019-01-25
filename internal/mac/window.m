@@ -162,8 +162,38 @@
                options:NSKeyValueObservingOptionNew
                context:nil];
 
+  [self loadDefaultURL];
+}
+
+- (void)loadDefaultURL {
   NSURLRequest *request = [NSURLRequest requestWithURL:self.defaultURL];
-  [webView loadRequest:request];
+  [self.webView loadRequest:request];
+}
+
+- (void)zoomDefault {
+  self.webView.magnification = 1;
+}
+
+- (void)zoomIn {
+  self.webView.magnification += 0.25;
+}
+
+- (void)zoomOut {
+  self.webView.magnification -= 0.25;
+}
+
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
+  SEL theAction = [item action];
+
+  if (theAction == @selector(zoomIn)) {
+    return (self.webView.magnification < 4);
+  }
+
+  if (theAction == @selector(zoomOut)) {
+    return (self.webView.magnification > 1);
+  }
+
+  return YES;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -191,7 +221,6 @@
   case WKNavigationTypeReload:
   case WKNavigationTypeLinkActivated:
   case WKNavigationTypeFormSubmitted:
-  case WKNavigationTypeBackForward:
   case WKNavigationTypeFormResubmitted: {
     App *app = [App current];
     id allowedHost = app.allowedHosts[url.host];
@@ -202,10 +231,10 @@
       return;
     }
 
-    decisionHandler(WKNavigationActionPolicyAllow);
     break;
   }
 
+  case WKNavigationTypeBackForward:
   case WKNavigationTypeOther:
   default:
     break;

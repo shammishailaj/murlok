@@ -14,6 +14,9 @@
 
 - (instancetype)init;
 - (void)initAppMenu;
+- (void)initEditMenu;
+- (void)initWindowMenu;
+- (void)initHelpMenu;
 - (void)mount;
 @end
 

@@ -116,6 +116,12 @@
   NSBundle *mainBundle = [NSBundle mainBundle];
   return mainBundle.infoDictionary[@"CFBundleName"];
 }
+
+- (void)murlok {
+  [[NSWorkspace sharedWorkspace]
+      openURL:
+          [NSURL URLWithString:@"https://github.com/maxence-charriere/murlok"]];
+}
 @end
 
 void platformCall(char *rawcall) {
