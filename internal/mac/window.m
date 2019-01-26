@@ -292,6 +292,11 @@
   }
 }
 
+- (BOOL)windowShouldClose:(NSWindow *)sender {
+  self.window = nil;
+  return YES;
+}
+
 - (void)configureTitleBar {
   self.window.titleVisibility = NSWindowTitleHidden;
   self.window.titlebarAppearsTransparent = true;
