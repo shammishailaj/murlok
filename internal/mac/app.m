@@ -73,7 +73,7 @@
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-  [App goCall:@"app.OnRun" withInput:nil];
+  [App goCall:@"app.Running" withInput:nil];
 }
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)sender
@@ -82,7 +82,7 @@
     @"HasVisibleWindows" : @(flag),
   };
 
-  [App goCall:@"app.OnReopen" withInput:in];
+  [App goCall:@"app.Reopened" withInput:in];
   return YES;
 }
 
