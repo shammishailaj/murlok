@@ -285,13 +285,18 @@
   [self.loader setHidden:YES];
 }
 
+- (void)webView:(WKWebView *)webView
+    didFailProvisionalNavigation:(WKNavigation *)navigation
+                       withError:(NSError *)error {
+  [self.loadingProgress setStringValue:error.localizedDescription];
+}
+
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message {
   if (![message.name isEqual:@"murlok"]) {
     return;
   }
 }
-
 - (BOOL)windowShouldClose:(NSWindow *)sender {
   self.window = nil;
   return YES;
