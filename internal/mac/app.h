@@ -9,7 +9,7 @@ typedef void (^PlatformHandler)(id, NSString *);
 @interface App
     : NSObject <NSApplicationDelegate, NSUserNotificationCenterDelegate>
 @property NSMutableDictionary<NSString *, PlatformHandler> *handlers;
-@property NSString *localServerEndpoint;
+@property NSString *localServerURL;
 @property NSDictionary *allowedHosts;
 @property MenuBar *menuBar;
 

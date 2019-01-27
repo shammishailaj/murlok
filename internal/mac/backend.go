@@ -16,7 +16,7 @@ type Backend struct {
 	Finalize func()
 
 	// The local server endpoint.
-	LocalServerEndpoint string
+	LocalServerURL string
 
 	// The function to write logs.
 	Logf func(string, ...interface{})
@@ -39,11 +39,11 @@ func (b *Backend) Run() error {
 	golang.Handle("app.Windows.NewDefault", onNewDefaultWindow)
 
 	return platform.Call("app.Run", nil, struct {
-		LocalServerEndpoint string
-		AllowedHosts        map[string]struct{}
+		LocalServerURL string
+		AllowedHosts   map[string]struct{}
 	}{
-		LocalServerEndpoint: b.LocalServerEndpoint,
-		AllowedHosts:        b.AllowedHosts,
+		LocalServerURL: b.LocalServerURL,
+		AllowedHosts:   b.AllowedHosts,
 	})
 }
 

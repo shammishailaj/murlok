@@ -65,7 +65,7 @@
 
 + (void)run:(id)in return:(NSString *)returnID {
   App *app = [App current];
-  app.localServerEndpoint = in[@"LocalServerEndpoint"];
+  app.localServerURL = in[@"LocalServerURL"];
   app.allowedHosts = in[@"AllowedHosts"];
 
   [NSApp run];
