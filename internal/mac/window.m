@@ -316,6 +316,51 @@
                 }];
 }
 
+- (void)webView:(WKWebView *)webView
+    runJavaScriptConfirmPanelWithMessage:(NSString *)message
+                        initiatedByFrame:(WKFrameInfo *)frame
+                       completionHandler:
+                           (void (^)(BOOL result))completionHandler {
+  NSAlert *alert = [[NSAlert alloc] init];
+  alert.messageText = @"Confirm";
+  alert.informativeText = message;
+  [alert addButtonWithTitle:@"Ok"];
+  [alert addButtonWithTitle:@"Cancel"];
+
+  [alert beginSheetModalForWindow:self.window
+                completionHandler:^(NSModalResponse returnCode) {
+                  completionHandler(returnCode == NSAlertFirstButtonReturn);
+                }];
+}
+
+- (void)webView:(WKWebView *)webView
+    runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt
+                              defaultText:(NSString *)defaultText
+                         initiatedByFrame:(WKFrameInfo *)frame
+                        completionHandler:
+                            (void (^)(NSString *result))completionHandler {
+  NSAlert *alert = [[NSAlert alloc] init];
+  alert.messageText = prompt;
+  [alert addButtonWithTitle:@"Ok"];
+  [alert addButtonWithTitle:@"Cancel"];
+
+  NSTextField *input =
+      [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 294, 24)];
+  input.stringValue = defaultText;
+  [alert setAccessoryView:input];
+
+  [alert beginSheetModalForWindow:self.window
+                completionHandler:^(NSModalResponse returnCode) {
+                  if (returnCode != NSAlertFirstButtonReturn) {
+                    completionHandler(nil);
+                    return;
+                  }
+
+                  [input validateEditing];
+                  completionHandler(input.stringValue);
+                }];
+}
+
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message {
   if (![message.name isEqual:@"murlok"]) {
