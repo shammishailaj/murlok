@@ -111,7 +111,7 @@
   [self.window.contentView
       addConstraints:
           [NSLayoutConstraint
-              constraintsWithVisualFormat:@"[box]-|"
+              constraintsWithVisualFormat:@"|-(>=16)-[box]-|"
                                   options:NSLayoutFormatAlignAllCenterX |
                                           NSLayoutFormatAlignAllCenterY
                                   metrics:nil
@@ -182,7 +182,7 @@
 }
 
 - (void)zoomDefault {
-  self.webView.magnification = 1;
+  self.webView.magnification = 1.0;
 }
 
 - (void)zoomIn {
@@ -212,7 +212,7 @@
                         change:(NSDictionary *)change
                        context:(void *)context {
 
-  if ([keyPath isEqual:@"estimatedProgress"]) {
+  if ([keyPath isEqual:@"estimatedProgress"] && self.err == nil) {
     [self.loadingProgress
         setStringValue:[NSString
                            stringWithFormat:@"%.0f%%",
@@ -277,17 +277,28 @@
 
 - (void)webView:(WKWebView *)webView
     didStartProvisionalNavigation:(WKNavigation *)navigation {
+  self.err = nil;
   [self.loader setHidden:NO];
 }
 
 - (void)webView:(WKWebView *)webView
     didFinishNavigation:(WKNavigation *)navigation {
   [self.loader setHidden:YES];
+  self.webView.alphaValue = 1.0;
+}
+
+- (void)webView:(WKWebView *)webView
+    didFailNavigation:(WKNavigation *)navigation
+            withError:(NSError *)error {
+  [App error:error.localizedDescription];
 }
 
 - (void)webView:(WKWebView *)webView
     didFailProvisionalNavigation:(WKNavigation *)navigation
                        withError:(NSError *)error {
+  self.err = error;
+  self.webView.alphaValue = 0.0;
+  [App error:error.localizedDescription];
   [self.loadingProgress setStringValue:error.localizedDescription];
 }
 
@@ -297,6 +308,7 @@
     return;
   }
 }
+
 - (BOOL)windowShouldClose:(NSWindow *)sender {
   self.window = nil;
   return YES;
