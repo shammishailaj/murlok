@@ -1,6 +1,9 @@
 package murlok
 
-import "github.com/maxence-charriere/murlok/internal/mac"
+import (
+	"github.com/maxence-charriere/murlok/internal/core"
+	"github.com/maxence-charriere/murlok/internal/mac"
+)
 
 func newBackend(localServerURL string) Backend {
 	switch target {
@@ -8,7 +11,7 @@ func newBackend(localServerURL string) Backend {
 		return &mac.Backend{
 			AllowedHosts:     allowedHosts,
 			Finalize:         finalize,
-			LocalServerURL:   localServerURL,
+			BridgeJS:         core.BridgeJS(localServerURL),
 			Logf:             Logf,
 			NewDefaultWindow: newDefaultWindow,
 			WhenDebug:        WhenDebug,

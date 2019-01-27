@@ -192,6 +192,14 @@
     didFinishNavigation:(WKNavigation *)navigation {
   [self.loader setHidden:YES];
   self.webView.alphaValue = 1.0;
+
+  [self.webView evaluateJavaScript:[App current].bridgeJS
+                 completionHandler:^(id res, NSError *error) {
+                   if (error != nil) {
+                     [App error:@"setting up murlok failed: %@",
+                                error.localizedDescription];
+                   }
+                 }];
 }
 
 - (void)webView:(WKWebView *)webView

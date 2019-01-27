@@ -9,7 +9,7 @@ typedef void (^PlatformHandler)(id, NSString *);
 @interface App
     : NSObject <NSApplicationDelegate, NSUserNotificationCenterDelegate>
 @property NSMutableDictionary<NSString *, PlatformHandler> *handlers;
-@property NSString *localServerURL;
+@property NSString *bridgeJS;
 @property NSDictionary *allowedHosts;
 @property MenuBar *menuBar;
 
@@ -24,6 +24,8 @@ typedef void (^PlatformHandler)(id, NSString *);
 + (void)debug:(NSString *)format, ...;
 + (void)error:(NSString *)format, ...;
 + (NSString *)name;
+- (void)murlok;
++ (void)emit:(NSString *)event withArg:(NSDictionary *)arg;
 @end
 
 void platformCall(char *rawcall);
