@@ -9,6 +9,7 @@ func main() {
 	// "https://the-verge.myshopify.com/",
 	)
 
-	murlok.Run("https://www.theverge.com")
+	// murlok.Run("https://www.theverge.com")
 	// murlok.Run("https://paper.dropbox.com")
+	murlok.Run("https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_alert")
 }
