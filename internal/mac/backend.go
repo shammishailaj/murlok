@@ -15,8 +15,9 @@ type Backend struct {
 	// The function called before the app is closed.
 	Finalize func()
 
-	// The local server endpoint.
-	LocalServerEndpoint string
+	// The javascript to evaluate in order setup the murlok object in a web
+	// view.
+	BridgeJS string
 
 	// The function to write logs.
 	Logf func(string, ...interface{})
@@ -39,11 +40,11 @@ func (b *Backend) Run() error {
 	golang.Handle("app.Windows.NewDefault", onNewDefaultWindow)
 
 	return platform.Call("app.Run", nil, struct {
-		LocalServerEndpoint string
-		AllowedHosts        map[string]struct{}
+		AllowedHosts map[string]struct{}
+		BridgeJS     string
 	}{
-		LocalServerEndpoint: b.LocalServerEndpoint,
-		AllowedHosts:        b.AllowedHosts,
+		AllowedHosts: b.AllowedHosts,
+		BridgeJS:     b.BridgeJS,
 	})
 }
 

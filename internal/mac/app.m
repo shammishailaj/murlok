@@ -65,8 +65,8 @@
 
 + (void)run:(id)in return:(NSString *)returnID {
   App *app = [App current];
-  app.localServerEndpoint = in[@"LocalServerEndpoint"];
   app.allowedHosts = in[@"AllowedHosts"];
+  app.bridgeJS = in[@"BridgeJS"];
 
   [NSApp run];
   [App return:returnID withOutput:nil andError:nil];
@@ -121,6 +121,30 @@
   [[NSWorkspace sharedWorkspace]
       openURL:
           [NSURL URLWithString:@"https://github.com/maxence-charriere/murlok"]];
+}
+
++ (void)emit:(NSString *)event withArg:(NSDictionary *)arg {
+  if (NSApp.keyWindow == nil) {
+    [App goCall:@"app.Windows.NewDefault"
+        withInput:@{
+          @"URL" : @"",
+        }];
+
+    [App emit:event withArg:arg];
+    return;
+  }
+
+  Window *win = NSApp.keyWindow.windowController;
+  NSString *eval = [NSString stringWithFormat:@"murlok.onEvent('%@', %@)",
+                                              event, [JSONEncoder encode:arg]];
+
+  [win.webView
+      evaluateJavaScript:eval
+       completionHandler:^(id res, NSError *error) {
+         if (error != nil) {
+           [App error:@"emitting event failed: %@", error.localizedDescription];
+         }
+       }];
 }
 @end
 

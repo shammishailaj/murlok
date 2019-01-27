@@ -133,10 +133,10 @@ func Run(rawurl string) {
 	}()
 
 	port := listener.Addr().(*net.TCPAddr).Port
-	localServerEndpoint := fmt.Sprintf("http://localhost:%v", port)
-	AllowHosts(localServerEndpoint)
+	localServerURL := fmt.Sprintf("http://localhost:%v", port)
+	AllowHosts(localServerURL)
 
-	backend = newBackend(localServerEndpoint)
+	backend = newBackend(localServerURL)
 	if err = backend.Run(); err != nil {
 		Logf("running %T failed: %s", backend, err)
 		os.Exit(1)
