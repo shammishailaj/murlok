@@ -142,6 +142,7 @@
   WKWebView *webView = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                           configuration:conf];
   webView.translatesAutoresizingMaskIntoConstraints = NO;
+  webView.customUserAgent = @"Murlok";
   webView.navigationDelegate = self;
   webView.UIDelegate = self;
   webView.allowsMagnification = YES;
@@ -179,6 +180,33 @@
 - (void)loadDefaultURL {
   NSURLRequest *request = [NSURLRequest requestWithURL:self.defaultURL];
   [self.webView loadRequest:request];
+}
+
+- (void)webView:(WKWebView *)webView
+    didStartProvisionalNavigation:(WKNavigation *)navigation {
+  self.err = nil;
+  [self.loader setHidden:NO];
+}
+
+- (void)webView:(WKWebView *)webView
+    didFinishNavigation:(WKNavigation *)navigation {
+  [self.loader setHidden:YES];
+  self.webView.alphaValue = 1.0;
+}
+
+- (void)webView:(WKWebView *)webView
+    didFailNavigation:(WKNavigation *)navigation
+            withError:(NSError *)error {
+  [App error:error.localizedDescription];
+}
+
+- (void)webView:(WKWebView *)webView
+    didFailProvisionalNavigation:(WKNavigation *)navigation
+                       withError:(NSError *)error {
+  self.err = error;
+  self.webView.alphaValue = 0.0;
+  [App error:error.localizedDescription];
+  [self.loadingProgress setStringValue:error.localizedDescription];
 }
 
 - (void)zoomDefault {
@@ -276,30 +304,61 @@
 }
 
 - (void)webView:(WKWebView *)webView
-    didStartProvisionalNavigation:(WKNavigation *)navigation {
-  self.err = nil;
-  [self.loader setHidden:NO];
+    runJavaScriptAlertPanelWithMessage:(NSString *)message
+                      initiatedByFrame:(WKFrameInfo *)frame
+                     completionHandler:(void (^)(void))completionHandler {
+  NSAlert *alert = [[NSAlert alloc] init];
+  alert.informativeText = message;
+
+  [alert beginSheetModalForWindow:self.window
+                completionHandler:^(NSModalResponse returnCode) {
+                  completionHandler();
+                }];
 }
 
 - (void)webView:(WKWebView *)webView
-    didFinishNavigation:(WKNavigation *)navigation {
-  [self.loader setHidden:YES];
-  self.webView.alphaValue = 1.0;
+    runJavaScriptConfirmPanelWithMessage:(NSString *)message
+                        initiatedByFrame:(WKFrameInfo *)frame
+                       completionHandler:
+                           (void (^)(BOOL result))completionHandler {
+  NSAlert *alert = [[NSAlert alloc] init];
+  alert.messageText = @"Confirm";
+  alert.informativeText = message;
+  [alert addButtonWithTitle:@"Ok"];
+  [alert addButtonWithTitle:@"Cancel"];
+
+  [alert beginSheetModalForWindow:self.window
+                completionHandler:^(NSModalResponse returnCode) {
+                  completionHandler(returnCode == NSAlertFirstButtonReturn);
+                }];
 }
 
 - (void)webView:(WKWebView *)webView
-    didFailNavigation:(WKNavigation *)navigation
-            withError:(NSError *)error {
-  [App error:error.localizedDescription];
-}
+    runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt
+                              defaultText:(NSString *)defaultText
+                         initiatedByFrame:(WKFrameInfo *)frame
+                        completionHandler:
+                            (void (^)(NSString *result))completionHandler {
+  NSAlert *alert = [[NSAlert alloc] init];
+  alert.messageText = prompt;
+  [alert addButtonWithTitle:@"Ok"];
+  [alert addButtonWithTitle:@"Cancel"];
 
-- (void)webView:(WKWebView *)webView
-    didFailProvisionalNavigation:(WKNavigation *)navigation
-                       withError:(NSError *)error {
-  self.err = error;
-  self.webView.alphaValue = 0.0;
-  [App error:error.localizedDescription];
-  [self.loadingProgress setStringValue:error.localizedDescription];
+  NSTextField *input =
+      [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 294, 24)];
+  input.stringValue = defaultText;
+  [alert setAccessoryView:input];
+
+  [alert beginSheetModalForWindow:self.window
+                completionHandler:^(NSModalResponse returnCode) {
+                  if (returnCode != NSAlertFirstButtonReturn) {
+                    completionHandler(nil);
+                    return;
+                  }
+
+                  [input validateEditing];
+                  completionHandler(input.stringValue);
+                }];
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController
