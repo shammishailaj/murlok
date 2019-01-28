@@ -10,6 +10,7 @@ import (
 	"strings"
 	"text/template"
 
+	_ "github.com/maxence-charriere/murlok"
 	"github.com/segmentio/conf"
 )
 
@@ -43,12 +44,46 @@ func main() {
 	case "clean":
 		clean(ctx, args)
 
+	case "update":
+		update(ctx, args)
+
 	case "help":
 		ld.PrintHelp(nil)
 
 	default:
 		panic("unreachable")
 	}
+}
+
+type updateConfig struct {
+	Verbose bool `conf:"v" help:"Enable verbose mode."`
+}
+
+func update(ctx context.Context, args []string) {
+	c := updateConfig{}
+
+	ld := conf.Loader{
+		Name:    "murlok update",
+		Args:    args,
+		Usage:   "[options...]",
+		Sources: []conf.Source{conf.NewEnvSource("MURLOK", os.Environ()...)},
+	}
+
+	conf.LoadWith(&c, ld)
+	verbose = c.Verbose
+
+	cmd := []string{"go", "get", "-u"}
+	if verbose {
+		cmd = append(cmd, "-v")
+	}
+	cmd = append(cmd, "github.com/maxence-charriere/murlok/cmd/murlok")
+
+	printVerbose("downloading github.com/maxence-charriere/murlok/cmd/murlok latest version")
+	if err := execute(ctx, cmd[0], cmd[1:]...); err != nil {
+		fail("%s", err)
+	}
+
+	printSuccess("murlok successfully updated")
 }
 
 func ctxWithSignals(parent context.Context, s ...os.Signal) (ctx context.Context, cancel func()) {

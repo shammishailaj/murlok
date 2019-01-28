@@ -90,7 +90,7 @@ func run(ctx context.Context, args []string) {
 	}
 
 	ld := conf.Loader{
-		Name:    "mac run",
+		Name:    "murlok run",
 		Args:    args,
 		Usage:   "[options...] [package]",
 		Sources: []conf.Source{conf.NewEnvSource("MURLOK", os.Environ()...)},
@@ -125,7 +125,7 @@ func clean(ctx context.Context, args []string) {
 	c := cleanConfig{}
 
 	ld := conf.Loader{
-		Name:    "mac clean",
+		Name:    "murlok clean",
 		Args:    args,
 		Usage:   "[options...] [package]",
 		Sources: []conf.Source{conf.NewEnvSource("MURLOK", os.Environ()...)},
