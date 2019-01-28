@@ -18,6 +18,10 @@ import (
 	"github.com/segmentio/conf"
 )
 
+type initConfig struct {
+	Verbose bool `conf:"v" help:"Enable verbose mode."`
+}
+
 type buildConfig struct {
 	Output           string `conf:"o"                 help:"The path where the package is saved."`
 	DeploymentTarget string `conf:"deployment-target" help:"The version on MacOS the build is for."`
@@ -42,6 +46,37 @@ type runConfig struct {
 type cleanConfig struct {
 	Output  string `conf:"o" help:"The path where the package is saved."`
 	Verbose bool   `conf:"v" help:"Enable verbose mode."`
+}
+
+func initPackage(ctx context.Context, args []string) {
+	c := initConfig{}
+
+	ld := conf.Loader{
+		Name:    "murlok init",
+		Args:    args,
+		Usage:   "[options...] [package]",
+		Sources: []conf.Source{conf.NewEnvSource("MURLOK", os.Environ()...)},
+	}
+
+	_, args = conf.LoadWith(&c, ld)
+	verbose = c.Verbose
+
+	sources := "."
+	if len(args) != 0 {
+		sources = args[0]
+	}
+
+	pkg := MacPackage{
+		Sources: sources,
+		Verbose: c.Verbose,
+		Log:     printVerbose,
+	}
+
+	if err := pkg.Init(ctx); err != nil {
+		fail("%s", err)
+	}
+
+	printSuccess("init succeeded")
 }
 
 func build(ctx context.Context, args []string) {

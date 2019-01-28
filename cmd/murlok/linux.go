@@ -2,7 +2,13 @@
 
 package main
 
-import "context"
+import (
+	"context"
+)
+
+func initPackage(ctx context.Context, args []string) {
+	fail("not implemented")
+}
 
 func build(ctx context.Context, args []string) {
 	fail("not implemented")

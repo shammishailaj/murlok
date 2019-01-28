@@ -23,6 +23,7 @@ func main() {
 		Name: "goapp",
 		Args: os.Args[1:],
 		Commands: []conf.Command{
+			{Name: "init", Help: "Download required dependencies."},
 			{Name: "build", Help: "Build and package a program."},
 			{Name: "run", Help: "Build and package and run program."},
 			{Name: "clean", Help: "Delete packaged program."},
@@ -35,6 +36,9 @@ func main() {
 	defer cancel()
 
 	switch cmd, args := conf.LoadWith(nil, ld); cmd {
+	case "init":
+		initPackage(ctx, args)
+
 	case "build":
 		build(ctx, args)
 
