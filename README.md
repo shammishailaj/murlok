@@ -32,7 +32,7 @@ murlok update -v
 
 ## Examples
 
-**In `main.go`:**
+In `main.go`:
 
 ```go
 package main
@@ -52,7 +52,7 @@ func main() {
 }
 ```
 
-**In the terminal:**
+In the terminal:
 
 ```sh
 # Initialize package (required once):
