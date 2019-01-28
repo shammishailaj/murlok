@@ -10,7 +10,7 @@
 // 			"segment.com",
 // 		)
 //
-// 		// Launches the webview and load the given remote url.
+// 		// Launches the webview and loads the given remote url.
 // 		murlok.Run("https://app.segment.com")
 // 	}
 //
