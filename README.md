@@ -32,6 +32,7 @@ murlok update -v
 
 ## How to use
 
+### Code
 Create `main.go`.
 
 ```go
@@ -52,6 +53,7 @@ func main() {
 }
 ```
 
+### Build
 In the terminal, use the `murlok` command line tool to download the platform
 specific dependencies, build and run the app.
 
@@ -67,5 +69,5 @@ murlok help
 murlok run -h
 ```
 
-**Result:**
+### Result
 ![UI example](https://github.com/maxence-charriere/murlok/wiki/images/example.png)
