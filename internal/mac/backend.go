@@ -12,12 +12,15 @@ type Backend struct {
 	// The allowed hosts.
 	AllowedHosts map[string]struct{}
 
-	// The function called before the app is closed.
-	Finalize func()
-
 	// The javascript to evaluate in order setup the murlok object in a web
 	// view.
 	BridgeJS string
+
+	// The default URL to be loaded when a window is created.
+	DefaultURL string
+
+	// The function called before the app is closed.
+	Finalize func()
 
 	// The function to write logs.
 	Logf func(string, ...interface{})
@@ -45,10 +48,12 @@ func (b *Backend) Run() error {
 	return platform.Call("app.Run", nil, struct {
 		AllowedHosts map[string]struct{}
 		BridgeJS     string
+		DefaultURL   string
 		SettingsURL  string `json:",omitempty"`
 	}{
 		AllowedHosts: b.AllowedHosts,
 		BridgeJS:     b.BridgeJS,
+		DefaultURL:   b.DefaultURL,
 		SettingsURL:  b.SettingsURL,
 	})
 }

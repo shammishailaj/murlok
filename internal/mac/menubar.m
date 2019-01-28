@@ -165,7 +165,7 @@
   [forward setKeys:@"cmd+]"];
 
   NSMenuItem *home = [[NSMenuItem alloc] initWithTitle:@"Home"
-                                                action:@selector(loadDefaultURL)
+                                                action:@selector(loadHome)
                                          keyEquivalent:@""];
   [home setKeys:@"cmd+shift+h"];
 

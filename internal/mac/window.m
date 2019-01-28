@@ -29,7 +29,12 @@
     }
 
     Window *win = [[Window alloc] initWithWindow:rawwin];
-    win.defaultURL = [NSURL URLWithString:url];
+
+    win.url = [App current].defaultURL;
+    if (url != nil) {
+      win.url = [NSURL URLWithString:url];
+    }
+
     rawwin.delegate = win;
     win.windowFrameAutosaveName = url;
 
@@ -163,12 +168,16 @@
                options:NSKeyValueObservingOptionNew
                context:nil];
 
-  [self loadURL:self.defaultURL];
+  [self loadURL:self.url];
 }
 
 - (void)loadURL:(NSURL *)url {
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
   [self.webView loadRequest:request];
+}
+
+- (void)loadHome {
+  [self loadURL:self.url];
 }
 
 - (void)webView:(WKWebView *)webView

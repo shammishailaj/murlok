@@ -151,7 +151,7 @@ func Run(rawurl string) {
 	localServerURL := fmt.Sprintf("http://localhost:%v", port)
 	AllowHosts(localServerURL)
 
-	backend = newBackend(localServerURL)
+	backend = newBackend(localServerURL, rawurl)
 	if backend == nil {
 		Logf("no backend available for", runtime.GOOS)
 		os.Exit(1)

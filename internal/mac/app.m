@@ -67,6 +67,7 @@
   App *app = [App current];
   app.allowedHosts = in[@"AllowedHosts"];
   app.bridgeJS = in[@"BridgeJS"];
+  app.defaultURL = [NSURL URLWithString:in[@"DefaultURL"]];
 
   NSString *settingsURL = in[@"SettingsURL"];
   if (settingsURL != nil) {
