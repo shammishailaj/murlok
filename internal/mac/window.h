@@ -5,7 +5,7 @@
 
 @interface Window : NSWindowController <NSWindowDelegate, WKNavigationDelegate,
                                         WKUIDelegate, WKScriptMessageHandler>
-@property NSURL *defaultURL;
+@property NSURL *homeURL;
 @property NSError *err;
 @property(weak) WKWebView *webView;
 @property(weak) NSView *loader;
@@ -14,7 +14,8 @@
 + (void) new:(NSDictionary *)in return:(NSString *)returnID;
 - (void)setBackground:(NSString *)color frosted:(BOOL)frosted;
 - (void)configureWebView;
-- (void)loadDefaultURL;
+- (void)loadURL:(NSURL *)url;
+- (void)loadHome;
 - (void)zoomDefault;
 - (void)zoomIn;
 - (void)zoomOut;

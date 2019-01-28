@@ -12,6 +12,8 @@ typedef void (^PlatformHandler)(id, NSString *);
 @property NSString *bridgeJS;
 @property NSDictionary *allowedHosts;
 @property MenuBar *menuBar;
+@property NSURL *defaultURL;
+@property NSURL *settingsURL;
 
 + (instancetype)current;
 - (instancetype)init;
@@ -24,7 +26,8 @@ typedef void (^PlatformHandler)(id, NSString *);
 + (void)debug:(NSString *)format, ...;
 + (void)error:(NSString *)format, ...;
 + (NSString *)name;
-- (void)murlok;
+- (void)loadSettings;
+- (void)loadMurlokRepo;
 + (void)emit:(NSString *)event withArg:(NSDictionary *)arg;
 @end
 

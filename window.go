@@ -16,5 +16,5 @@ type Window struct {
 	TitleBarColor string `json:",omitempty"`
 
 	// The url load when the view is created.
-	URL string
+	URL string `json:",omitempty"`
 }

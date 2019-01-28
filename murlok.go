@@ -51,6 +51,9 @@ var (
 	// Server is the server used to serve local requests.
 	Server = &http.Server{Addr: ":0"}
 
+	// SettingsURL is the url of the settings page.
+	SettingsURL string
+
 	allowedHosts = make(map[string]struct{})
 	backend      Backend
 	target       string
@@ -148,7 +151,7 @@ func Run(rawurl string) {
 	localServerURL := fmt.Sprintf("http://localhost:%v", port)
 	AllowHosts(localServerURL)
 
-	backend = newBackend(localServerURL)
+	backend = newBackend(localServerURL, rawurl)
 	if backend == nil {
 		Logf("no backend available for", runtime.GOOS)
 		os.Exit(1)
