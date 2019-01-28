@@ -30,9 +30,9 @@ go get -u -v github.com/maxence-charriere/murlok/cmd/murlok
 murlok update -v
 ```
 
-## Examples
+## How to use
 
-In `main.go`:
+Create `main.go`.
 
 ```go
 package main
@@ -52,7 +52,8 @@ func main() {
 }
 ```
 
-In the terminal:
+In the terminal, use the `murlok` command line tool to download the platform
+specific dependencies, build and run the app.
 
 ```sh
 # Initialize package (required once):
@@ -60,6 +61,10 @@ murlok init -v
 
 # Build and launch the app:
 murlok run -v
+
+# Get help:
+murlok help
+murlok run -h
 ```
 
 **Result:**
