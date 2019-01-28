@@ -63,10 +63,6 @@ murlok init -v
 
 # Build and launch the app:
 murlok run -v
-
-# Get help:
-murlok help
-murlok run -h
 ```
 
 ### Result
