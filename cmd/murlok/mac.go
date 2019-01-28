@@ -236,22 +236,6 @@ type MacPackage struct {
 	settings      macSettings
 }
 
-// Init satisfies the Package interface.
-func (pkg *MacPackage) Init(ctx context.Context) error {
-	if err := pkg.init(); err != nil {
-		return err
-	}
-
-	pkg.Log("creating resources directory")
-	if err := os.MkdirAll(filepath.Join(pkg.Sources, "resources", "css"), 0755); err != nil {
-		return err
-	}
-
-	pkg.Log("installing Xcode command line tools")
-	execute(ctx, "xcode-select", "--install")
-	return nil
-}
-
 func (pkg *MacPackage) init() (err error) {
 	if runtime.GOOS != "darwin" {
 		return errors.New("operating system is not MacOS")
@@ -291,6 +275,22 @@ func (pkg *MacPackage) init() (err error) {
 	pkg.macOSDir = filepath.Join(pkg.Output, "Contents", "MacOS")
 	pkg.resourcesDir = filepath.Join(pkg.Output, "Contents", "Resources")
 	pkg.executable = filepath.Join(pkg.Output, "Contents", "MacOS", execName)
+	return nil
+}
+
+// Init satisfies the Package interface.
+func (pkg *MacPackage) Init(ctx context.Context) error {
+	if err := pkg.init(); err != nil {
+		return err
+	}
+
+	pkg.Log("creating resources directory")
+	if err := os.MkdirAll(filepath.Join(pkg.Sources, "web"), 0755); err != nil {
+		return err
+	}
+
+	pkg.Log("installing Xcode command line tools")
+	execute(ctx, "xcode-select", "--install")
 	return nil
 }
 
