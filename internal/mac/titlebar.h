@@ -4,6 +4,7 @@
 #import <Cocoa/Cocoa.h>
 
 @interface TitleBar : NSView
+@property NSString *backgroundColor;
 @end
 
 #endif /* titlebar_h */

@@ -3,6 +3,8 @@ package main
 import "github.com/maxence-charriere/murlok"
 
 func main() {
+	murlok.DefaultWindow = murlok.Window{TitleBarColor: "#ffffff"}
+
 	murlok.AllowHosts(
 		// "www.theverge.com",
 		// "store.theverge.com",

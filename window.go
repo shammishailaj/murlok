@@ -6,8 +6,12 @@ type Window struct {
 	URL string
 
 	// The background color (#rrggbb).
-	BackgroundColor string
+	BackgroundColor string `json:",omitempty"`
 
-	// Set the background as a frosted surface.
-	FrostedBackground bool
+	// Sets the background as a frosted surface.
+	FrostedBackground bool `json:",omitempty"`
+
+	// Sets a title bar color. When set, the web content appears below the title
+	// bar rather than under.
+	TitleBarColor string `json:",omitempty"`
 }
