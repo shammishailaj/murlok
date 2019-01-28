@@ -58,7 +58,7 @@ In the terminal, use the `murlok` command line tool to download the platform
 specific dependencies, build and run the app.
 
 ```sh
-# Initialize package (required once):
+# Initialize package and download dependencies (required once):
 murlok init -v
 
 # Build and launch the app:
