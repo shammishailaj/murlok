@@ -4,8 +4,9 @@ import "github.com/maxence-charriere/murlok"
 
 func main() {
 	murlok.DefaultWindow = murlok.Window{
-		TitleBarColor:   "#ffffff",
 		BackgroundColor: "#ffffff",
+		TextColor:       "#000000",
+		TitleBarColor:   "#ffffff",
 	}
 
 	murlok.AllowHosts(

@@ -10,6 +10,7 @@
     NSString *url = in[@"URL"];
     NSString *backgroundColor = in[@"BackgroundColor"];
     BOOL frostedBackground = [in[@"FrostedBackground"] boolValue];
+    NSString *textColor = in[@"TextColor"];
     NSString *titleBarColor = in[@"TitleBarColor"];
 
     NSWindow *rawwin = [[NSWindow alloc]
@@ -33,9 +34,9 @@
     win.windowFrameAutosaveName = url;
 
     [win setBackground:backgroundColor frosted:frostedBackground];
-    [win configureLoader];
+    [win configureLoaderWithTextColor:textColor];
     [win configureWebView];
-    [win configureTitleBar:titleBarColor];
+    [win configureTitleBarWithBackgroundColor:titleBarColor];
 
     if (NSApp.keyWindow != nil) {
       NSRect bounds = NSApp.keyWindow.frame;
@@ -69,7 +70,7 @@
       [NSColor colorWithCIColor:[CIColor colorWithHexString:color]];
 }
 
-- (void)configureLoader {
+- (void)configureLoaderWithTextColor:(NSString *)textColor {
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSString *imgpath =
       [mainBundle.resourcePath stringByAppendingString:@"/logo.png"];
@@ -80,6 +81,11 @@
   NSTextField *progress = [NSTextField labelWithString:@"100%"];
   [progress setFont:[NSFont systemFontOfSize:21 weight:NSFontWeightThin]];
   progress.translatesAutoresizingMaskIntoConstraints = NO;
+
+  if (textColor != nil) {
+    progress.textColor =
+        [NSColor colorWithCIColor:[CIColor colorWithHexString:textColor]];
+  }
 
   NSView *box = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)];
   box.translatesAutoresizingMaskIntoConstraints = NO;
@@ -364,7 +370,7 @@
   return YES;
 }
 
-- (void)configureTitleBar:(NSString *)color {
+- (void)configureTitleBarWithBackgroundColor:(NSString *)color {
   self.window.titleVisibility = NSWindowTitleHidden;
   self.window.titlebarAppearsTransparent = true;
 
