@@ -20,9 +20,10 @@
              action:@selector(orderFrontStandardAboutPanel:)
       keyEquivalent:@""];
 
-  NSMenuItem *preferences = [[NSMenuItem alloc] initWithTitle:@"Preferences..."
-                                                       action:nil
-                                                keyEquivalent:@""];
+  NSMenuItem *preferences =
+      [[NSMenuItem alloc] initWithTitle:@"Preferences..."
+                                 action:@selector(loadSettings)
+                          keyEquivalent:@""];
   [preferences setKeys:@"cmd+,"];
 
   NSApp.servicesMenu = [[NSMenu alloc] initWithTitle:@"Services"];
@@ -225,9 +226,10 @@
       keyEquivalent:@""];
   [help setKeys:@"cmd+?"];
 
-  NSMenuItem *murlok = [[NSMenuItem alloc] initWithTitle:@"Murlok"
-                                                  action:@selector(murlok)
-                                           keyEquivalent:@""];
+  NSMenuItem *murlok =
+      [[NSMenuItem alloc] initWithTitle:@"Murlok"
+                                 action:@selector(loadMurlokRepo)
+                          keyEquivalent:@""];
 
   NSMenu *menu = [[NSMenu alloc] initWithTitle:@"Help"];
   [menu addItem:help];

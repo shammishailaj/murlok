@@ -25,6 +25,9 @@ type Backend struct {
 	// The function used to create a default window.
 	NewDefaultWindow func(string)
 
+	// The url loaded when the menu bar "Preferences" button is clicked.
+	SettingsURL string
+
 	// The function to execute debug scoped instructions.
 	WhenDebug func(func())
 }
@@ -42,9 +45,11 @@ func (b *Backend) Run() error {
 	return platform.Call("app.Run", nil, struct {
 		AllowedHosts map[string]struct{}
 		BridgeJS     string
+		SettingsURL  string `json:",omitempty"`
 	}{
 		AllowedHosts: b.AllowedHosts,
 		BridgeJS:     b.BridgeJS,
+		SettingsURL:  b.SettingsURL,
 	})
 }
 

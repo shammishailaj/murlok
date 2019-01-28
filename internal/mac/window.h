@@ -14,7 +14,7 @@
 + (void) new:(NSDictionary *)in return:(NSString *)returnID;
 - (void)setBackground:(NSString *)color frosted:(BOOL)frosted;
 - (void)configureWebView;
-- (void)loadDefaultURL;
+- (void)loadURL:(NSURL *)url;
 - (void)zoomDefault;
 - (void)zoomIn;
 - (void)zoomOut;

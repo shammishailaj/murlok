@@ -10,10 +10,11 @@ func newBackend(localServerURL string) Backend {
 	case "macos":
 		return &mac.Backend{
 			AllowedHosts:     allowedHosts,
-			Finalize:         finalize,
 			BridgeJS:         core.BridgeJS(localServerURL),
+			Finalize:         finalize,
 			Logf:             Logf,
 			NewDefaultWindow: newDefaultWindow,
+			SettingsURL:      SettingsURL,
 			WhenDebug:        WhenDebug,
 		}
 

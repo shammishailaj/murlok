@@ -68,6 +68,11 @@
   app.allowedHosts = in[@"AllowedHosts"];
   app.bridgeJS = in[@"BridgeJS"];
 
+  NSString *settingsURL = in[@"SettingsURL"];
+  if (settingsURL != nil) {
+    app.settingsURL = [NSURL URLWithString:settingsURL];
+  }
+
   [NSApp run];
   [App return:returnID withOutput:nil andError:nil];
 }
@@ -117,10 +122,28 @@
   return mainBundle.infoDictionary[@"CFBundleName"];
 }
 
-- (void)murlok {
+- (void)loadMurlokRepo {
   [[NSWorkspace sharedWorkspace]
       openURL:
           [NSURL URLWithString:@"https://github.com/maxence-charriere/murlok"]];
+}
+
+- (void)loadSettings {
+  if (self.settingsURL == nil) {
+    [App error:@"no settings url to load"];
+    return;
+  }
+
+  if (NSApp.keyWindow == nil) {
+    [App goCall:@"app.Windows.NewDefault"
+        withInput:@{
+          @"URL" : self.settingsURL,
+        }];
+    return;
+  }
+
+  Window *win = NSApp.keyWindow.windowController;
+  [win loadURL:self.settingsURL];
 }
 
 + (void)emit:(NSString *)event withArg:(NSDictionary *)arg {

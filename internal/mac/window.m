@@ -163,11 +163,11 @@
                options:NSKeyValueObservingOptionNew
                context:nil];
 
-  [self loadDefaultURL];
+  [self loadURL:self.defaultURL];
 }
 
-- (void)loadDefaultURL {
-  NSURLRequest *request = [NSURLRequest requestWithURL:self.defaultURL];
+- (void)loadURL:(NSURL *)url {
+  NSURLRequest *request = [NSURLRequest requestWithURL:url];
   [self.webView loadRequest:request];
 }
 
