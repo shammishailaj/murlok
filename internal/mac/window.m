@@ -10,6 +10,7 @@
     NSString *url = in[@"URL"];
     NSString *backgroundColor = in[@"BackgroundColor"];
     BOOL frostedBackground = [in[@"FrostedBackground"] boolValue];
+    NSString *titleBarColor = in[@"TitleBarColor"];
 
     NSWindow *rawwin = [[NSWindow alloc]
         initWithContentRect:NSMakeRect(0, 0, 1280, 720)
@@ -34,7 +35,7 @@
     [win setBackground:backgroundColor frosted:frostedBackground];
     [win configureLoader];
     [win configureWebView];
-    [win configureTitleBar];
+    [win configureTitleBar:titleBarColor];
 
     if (NSApp.keyWindow != nil) {
       NSRect bounds = NSApp.keyWindow.frame;
@@ -141,7 +142,6 @@
 
   WKWebView *webView = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)
                                           configuration:conf];
-  webView.translatesAutoresizingMaskIntoConstraints = NO;
   webView.customUserAgent = @"Murlok";
   webView.navigationDelegate = self;
   webView.UIDelegate = self;
@@ -150,23 +150,6 @@
   // Make background transparent.
   [webView setValue:@(NO) forKey:@"drawsBackground"];
 
-  [self.window.contentView addSubview:webView];
-  [self.window.contentView
-      addConstraints:
-          [NSLayoutConstraint
-              constraintsWithVisualFormat:@"|[webView]|"
-                                  options:0
-                                  metrics:nil
-                                    views:NSDictionaryOfVariableBindings(
-                                              webView)]];
-  [self.window.contentView
-      addConstraints:
-          [NSLayoutConstraint
-              constraintsWithVisualFormat:@"V:|[webView]|"
-                                  options:0
-                                  metrics:nil
-                                    views:NSDictionaryOfVariableBindings(
-                                              webView)]];
   self.webView = webView;
 
   [webView addObserver:self
@@ -381,12 +364,27 @@
   return YES;
 }
 
-- (void)configureTitleBar {
+- (void)configureTitleBar:(NSString *)color {
+  NSLog(@"color: %@", color);
+
   self.window.titleVisibility = NSWindowTitleHidden;
   self.window.titlebarAppearsTransparent = true;
 
+  WKWebView *webView = self.webView;
+  webView.translatesAutoresizingMaskIntoConstraints = NO;
+
   TitleBar *titleBar = [[TitleBar alloc] init];
   titleBar.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [self.window.contentView addSubview:webView];
+  [self.window.contentView
+      addConstraints:
+          [NSLayoutConstraint
+              constraintsWithVisualFormat:@"|[webView]|"
+                                  options:0
+                                  metrics:nil
+                                    views:NSDictionaryOfVariableBindings(
+                                              webView)]];
 
   [self.window.contentView addSubview:titleBar];
   [self.window.contentView
@@ -397,6 +395,21 @@
                                   metrics:nil
                                     views:NSDictionaryOfVariableBindings(
                                               titleBar)]];
+
+  if (color != nil) {
+    titleBar.backgroundColor = color;
+
+    [self.window.contentView
+        addConstraints:
+            [NSLayoutConstraint
+                constraintsWithVisualFormat:@"V:|[titleBar(==22)][webView]|"
+                                    options:0
+                                    metrics:nil
+                                      views:NSDictionaryOfVariableBindings(
+                                                titleBar, webView)]];
+    return;
+  }
+
   [self.window.contentView
       addConstraints:
           [NSLayoutConstraint
@@ -405,5 +418,13 @@
                                   metrics:nil
                                     views:NSDictionaryOfVariableBindings(
                                               titleBar)]];
+  [self.window.contentView
+      addConstraints:
+          [NSLayoutConstraint
+              constraintsWithVisualFormat:@"V:|[webView]|"
+                                  options:0
+                                  metrics:nil
+                                    views:NSDictionaryOfVariableBindings(
+                                              webView)]];
 }
 @end

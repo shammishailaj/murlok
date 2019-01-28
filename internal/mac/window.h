@@ -18,7 +18,7 @@
 - (void)zoomDefault;
 - (void)zoomIn;
 - (void)zoomOut;
-- (void)configureTitleBar;
+- (void)configureTitleBar:(NSString *)color;
 - (void)configureLoader;
 @end
 
