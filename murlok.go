@@ -137,6 +137,11 @@ func Run(rawurl string) {
 	AllowHosts(localServerURL)
 
 	backend = newBackend(localServerURL)
+	if backend == nil {
+		Logf("no backend available for", runtime.GOOS)
+		os.Exit(1)
+	}
+
 	if err = backend.Run(); err != nil {
 		Logf("running %T failed: %s", backend, err)
 		os.Exit(1)
