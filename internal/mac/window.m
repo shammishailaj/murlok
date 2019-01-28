@@ -365,8 +365,6 @@
 }
 
 - (void)configureTitleBar:(NSString *)color {
-  NSLog(@"color: %@", color);
-
   self.window.titleVisibility = NSWindowTitleHidden;
   self.window.titlebarAppearsTransparent = true;
 
