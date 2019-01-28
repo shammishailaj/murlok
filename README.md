@@ -30,4 +30,14 @@ go get -u -v github.com/maxence-charriere/murlok/cmd/murlok
 murlok update -v
 ```
 
-##
+## Examples
+
+### With local server
+
+```go
+```
+
+### With remote server
+
+```go
+```
