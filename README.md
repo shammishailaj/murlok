@@ -32,6 +32,8 @@ murlok update -v
 
 ## Examples
 
+**In `main.go`:**
+
 ```go
 package main
 
@@ -49,3 +51,15 @@ func main() {
     murlok.Run("https://app.segment.com")
 }
 ```
+
+**In the terminal:**
+
+```sh
+# Initialize package (required once):
+murlok init -v
+
+# Build and launch the app:
+murlok run -v
+```
+
+**Result:**
