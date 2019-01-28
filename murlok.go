@@ -151,7 +151,7 @@ func build(path string) {
 		packageConfig = MacOS
 
 	default:
-		Log("no operating system targetted")
+		Log("no operating system targeted")
 		return
 	}
 

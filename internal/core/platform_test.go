@@ -53,7 +53,7 @@ func TestPlatform(t *testing.T) {
 			err:      true,
 		},
 		{
-			scenario: "call a method without with empty ouput succeed",
+			scenario: "call a method without with empty output succeed",
 			method:   "test.EmptyOutput",
 			in:       input{Name: "Maxence"},
 		},
