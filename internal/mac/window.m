@@ -30,9 +30,9 @@
 
     Window *win = [[Window alloc] initWithWindow:rawwin];
 
-    win.url = [App current].defaultURL;
+    win.homeURL = [App current].defaultURL;
     if (url != nil) {
-      win.url = [NSURL URLWithString:url];
+      win.homeURL = [NSURL URLWithString:url];
     }
 
     rawwin.delegate = win;
@@ -168,7 +168,7 @@
                options:NSKeyValueObservingOptionNew
                context:nil];
 
-  [self loadURL:self.url];
+  [self loadURL:self.homeURL];
 }
 
 - (void)loadURL:(NSURL *)url {
@@ -177,7 +177,7 @@
 }
 
 - (void)loadHome {
-  [self loadURL:self.url];
+  [self loadURL:self.homeURL];
 }
 
 - (void)webView:(WKWebView *)webView

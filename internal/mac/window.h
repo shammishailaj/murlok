@@ -5,7 +5,7 @@
 
 @interface Window : NSWindowController <NSWindowDelegate, WKNavigationDelegate,
                                         WKUIDelegate, WKScriptMessageHandler>
-@property NSURL *url;
+@property NSURL *homeURL;
 @property NSError *err;
 @property(weak) WKWebView *webView;
 @property(weak) NSView *loader;
