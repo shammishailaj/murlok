@@ -3,23 +3,13 @@ package main
 import "github.com/maxence-charriere/murlok"
 
 func main() {
-	murlok.DefaultWindow = murlok.Window{
-		BackgroundColor: "#ffffff",
-		TitleBarColor:   "#ffffff",
-		TextColor:       "#000000",
-	}
-
+	// Allows the addresses with hosts listed below to be loaded into the
+	// webview.
 	murlok.AllowHosts(
-		// "www.theverge.com",
-		// "store.theverge.com",
-		// "https://the-verge.myshopify.com/",
-		"fiddle.jshell.net",
+		"app.segment.com",
+		"segment.com",
 	)
 
-	// murlok.Run("https://www.theverge.com")
-	murlok.Run("https://paper.dropbox.com")
-	// murlok.Run("https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_alert")
-	// murlok.Run("https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_confirm")
-	// murlok.Run("https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_prompt")
-	// murlok.Run("https://jsfiddle.net/Luvo4axh/5/")
+	// Launches the webview and load the given remote url.
+	murlok.Run("https://app.segment.com")
 }

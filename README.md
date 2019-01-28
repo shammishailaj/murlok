@@ -32,12 +32,20 @@ murlok update -v
 
 ## Examples
 
-### With local server
-
 ```go
-```
+package main
 
-### With remote server
+import "github.com/maxence-charriere/murlok"
 
-```go
+func main() {
+    // Allows the addresses with hosts listed below to be loaded into the
+    // webview.
+    murlok.AllowHosts(
+        "app.segment.com",
+        "segment.com",
+    )
+
+    // Launches the webview and load the given remote url.
+    murlok.Run("https://app.segment.com")
+}
 ```
