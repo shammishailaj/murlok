@@ -63,3 +63,4 @@ murlok run -v
 ```
 
 **Result:**
+![UI example](https://github.com/maxence-charriere/murlok/wiki/images/example.png)
