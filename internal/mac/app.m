@@ -31,6 +31,11 @@
         return [App run:in return:returnID];
       }];
 
+  [self handle:@"app.WebDir"
+      withHandler:^(id in, NSString *returnID) {
+        return [App webDir:in return:returnID];
+      }];
+
   [self handle:@"windows.New"
       withHandler:^(id in, NSString *returnID) {
         return [Window new:in return:returnID];
@@ -90,6 +95,16 @@
 
   [App goCall:@"app.Reopened" withInput:in];
   return YES;
+}
+
++ (void)webDir:(id)in return:(NSString *)returnID {
+  NSBundle *mainBundle = [NSBundle mainBundle];
+
+  NSDictionary *out = @{
+    @"WebDir" : mainBundle.resourcePath,
+  };
+
+  [App return:returnID withOutput:out andError:nil];
 }
 
 + (void)debug:(NSString *)format, ... {

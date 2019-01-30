@@ -263,7 +263,6 @@
   [App debug:@"navigating to %@", url];
 
   switch (navigationAction.navigationType) {
-  case WKNavigationTypeReload:
   case WKNavigationTypeLinkActivated:
   case WKNavigationTypeFormSubmitted:
   case WKNavigationTypeFormResubmitted: {
@@ -279,6 +278,7 @@
     break;
   }
 
+  case WKNavigationTypeReload:
   case WKNavigationTypeBackForward:
   case WKNavigationTypeOther:
   default:

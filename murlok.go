@@ -25,8 +25,11 @@ import (
 	"net/url"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 var (
@@ -64,18 +67,31 @@ var (
 // Backend is the interface that describes a backend that handles the platform
 // specific operations.
 type Backend interface {
-	// Runs the backend.
-	Run() error
-
 	// Calls the named method with the given input.
 	Call(method string, out, in interface{}) error
+
+	// Runs the backend.
+	Run() error
 }
 
 // Logger describes a function that writes logs.
 type Logger func(string, ...interface{})
 
-func init() {
-	runtime.LockOSThread()
+// AllowHosts authorized url with the given hosts to be loaded in web views.
+// Unauthorized url are loaded in the operating system default browser.
+func AllowHosts(hosts ...string) {
+	for _, host := range hosts {
+		allowedHosts[host] = struct{}{}
+	}
+}
+
+// EnableDebug enables or disable debug mode.
+func EnableDebug(v bool) {
+	if v {
+		whenDebug = func(f func()) { f() }
+	} else {
+		whenDebug = func(func()) {}
+	}
 }
 
 // Log logs the given arguments separated by a space.
@@ -95,13 +111,66 @@ func Logf(format string, args ...interface{}) {
 	DefaultLogger(format, args...)
 }
 
-// EnableDebug enables or disable debug mode.
-func EnableDebug(v bool) {
-	if v {
-		whenDebug = func(f func()) { f() }
-	} else {
-		whenDebug = func(func()) {}
+// Run runs the application and shows a web view that loads the given url
+func Run(rawurl string) {
+	if murlokBuild := os.Getenv("MURLOK_BUILD"); len(murlokBuild) != 0 {
+		build(murlokBuild)
+		return
 	}
+
+	EnableDebug(verbose == "true")
+
+	defer func() {
+		if p := recover(); p != nil {
+			Log(p)
+			os.Exit(1)
+		}
+	}()
+
+	http.HandleFunc("/murlok", rpc)
+
+	port, err := runLocalServer(Server)
+	if err != nil {
+		panic(err)
+	}
+	localHost := "localhost:" + strconv.Itoa(port)
+	localURL := "http://" + localHost
+
+	defaultURL, err := url.Parse(rawurl)
+	if err != nil {
+		panic(errors.Wrap(err, "parsing default url failed"))
+	}
+	if defaultURL.Host == "" {
+		defaultURL.Scheme = "http"
+		defaultURL.Host = localHost
+	}
+	DefaultWindow.URL = defaultURL.String()
+
+	AllowHosts(
+		localHost,
+		defaultURL.Host,
+	)
+
+	backend = newBackend(localURL, rawurl)
+	if backend == nil {
+		panic(errors.Errorf("no backend available for %s", runtime.GOOS))
+	}
+
+	if err = backend.Run(); err != nil {
+		panic(errors.Wrapf(err, "running %T failed: %s", backend, err))
+	}
+}
+
+// WebDir returns the path of the web directory.
+func WebDir() string {
+	out := struct {
+		WebDir string
+	}{}
+
+	if err := backend.Call("app.WebDir", &out, nil); err != nil {
+		panic(errors.Wrap(err, "getting web directory path failed"))
+	}
+	return out.WebDir
 }
 
 // WhenDebug calls the given function when debug mode is enabled.
@@ -109,58 +178,8 @@ func WhenDebug(f func()) {
 	whenDebug(f)
 }
 
-// AllowHosts authorized url with the given hosts to be loaded in web views.
-// Unauthorized url are loaded in the operating system default browser.
-func AllowHosts(hosts ...string) {
-	for _, host := range hosts {
-		allowedHosts[host] = struct{}{}
-	}
-}
-
-// Run runs the application and shows a web view that loads the given url
-func Run(rawurl string) {
-	EnableDebug(verbose == "true")
-
-	defaultWindowURL, err := url.Parse(rawurl)
-	if err != nil {
-		Log("parsing url failed:", err)
-		os.Exit(1)
-	}
-
-	DefaultWindow.URL = defaultWindowURL.String()
-	AllowHosts(defaultWindowURL.Host)
-
-	if murlokBuild := os.Getenv("MURLOK_BUILD"); len(murlokBuild) != 0 {
-		build(murlokBuild)
-		return
-	}
-
-	http.HandleFunc("/murlok", rpc)
-
-	listener, err := net.Listen("tcp", Server.Addr)
-	if err != nil {
-		Logf("listening on %s failed: %s", Server.Addr, err)
-		os.Exit(1)
-	}
-
-	go func() {
-		Server.Serve(listener)
-	}()
-
-	port := listener.Addr().(*net.TCPAddr).Port
-	localServerURL := fmt.Sprintf("http://localhost:%v", port)
-	AllowHosts(localServerURL)
-
-	backend = newBackend(localServerURL, rawurl)
-	if backend == nil {
-		Logf("no backend available for", runtime.GOOS)
-		os.Exit(1)
-	}
-
-	if err = backend.Run(); err != nil {
-		Logf("running %T failed: %s", backend, err)
-		os.Exit(1)
-	}
+func init() {
+	runtime.LockOSThread()
 }
 
 func build(path string) {
@@ -186,6 +205,20 @@ func build(path string) {
 	if err := enc.Encode(packageConfig); err != nil {
 		Log(err)
 	}
+}
+
+func runLocalServer(serv *http.Server) (port int, err error) {
+	var list net.Listener
+	if list, err = net.Listen("tcp", serv.Addr); err != nil {
+		return -1, errors.Errorf("listening on %s failed: %s", Server.Addr, err)
+	}
+
+	go func() {
+		serv.Serve(list)
+	}()
+
+	port = list.Addr().(*net.TCPAddr).Port
+	return port, nil
 }
 
 func newDefaultWindow(url string) {

@@ -23,6 +23,7 @@ typedef void (^PlatformHandler)(id, NSString *);
        andError:(NSString *)err;
 + (void)goCall:(NSString *)method withInput:(id)in;
 + (void)run:(id)in return:(NSString *)returnID;
++ (void)webDir:(id)in return:(NSString *)returnID;
 + (void)debug:(NSString *)format, ...;
 + (void)error:(NSString *)format, ...;
 + (NSString *)name;
