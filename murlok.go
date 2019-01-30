@@ -67,18 +67,31 @@ var (
 // Backend is the interface that describes a backend that handles the platform
 // specific operations.
 type Backend interface {
-	// Runs the backend.
-	Run() error
-
 	// Calls the named method with the given input.
 	Call(method string, out, in interface{}) error
+
+	// Runs the backend.
+	Run() error
 }
 
 // Logger describes a function that writes logs.
 type Logger func(string, ...interface{})
 
-func init() {
-	runtime.LockOSThread()
+// AllowHosts authorized url with the given hosts to be loaded in web views.
+// Unauthorized url are loaded in the operating system default browser.
+func AllowHosts(hosts ...string) {
+	for _, host := range hosts {
+		allowedHosts[host] = struct{}{}
+	}
+}
+
+// EnableDebug enables or disable debug mode.
+func EnableDebug(v bool) {
+	if v {
+		whenDebug = func(f func()) { f() }
+	} else {
+		whenDebug = func(func()) {}
+	}
 }
 
 // Log logs the given arguments separated by a space.
@@ -96,28 +109,6 @@ func Log(args ...interface{}) {
 // Logf logs the given arguments according to the specified format.
 func Logf(format string, args ...interface{}) {
 	DefaultLogger(format, args...)
-}
-
-// EnableDebug enables or disable debug mode.
-func EnableDebug(v bool) {
-	if v {
-		whenDebug = func(f func()) { f() }
-	} else {
-		whenDebug = func(func()) {}
-	}
-}
-
-// WhenDebug calls the given function when debug mode is enabled.
-func WhenDebug(f func()) {
-	whenDebug(f)
-}
-
-// AllowHosts authorized url with the given hosts to be loaded in web views.
-// Unauthorized url are loaded in the operating system default browser.
-func AllowHosts(hosts ...string) {
-	for _, host := range hosts {
-		allowedHosts[host] = struct{}{}
-	}
 }
 
 // Run runs the application and shows a web view that loads the given url
@@ -168,6 +159,27 @@ func Run(rawurl string) {
 	if err = backend.Run(); err != nil {
 		panic(errors.Wrapf(err, "running %T failed: %s", backend, err))
 	}
+}
+
+// WebDir returns the path of the web directory.
+func WebDir() string {
+	out := struct {
+		WebDir string
+	}{}
+
+	if err := backend.Call("app.WebDir", &out, nil); err != nil {
+		panic(errors.Wrap(err, "getting web directory path failed"))
+	}
+	return out.WebDir
+}
+
+// WhenDebug calls the given function when debug mode is enabled.
+func WhenDebug(f func()) {
+	whenDebug(f)
+}
+
+func init() {
+	runtime.LockOSThread()
 }
 
 func build(path string) {

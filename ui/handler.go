@@ -3,8 +3,10 @@
 package ui
 
 import (
-	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
+	"sync"
 )
 
 // Handler is a http handler that serves UI components created with this
@@ -13,13 +15,30 @@ type Handler struct {
 	// The name of the component to load when no path is specified.
 	DefaultCompo string
 
-	// The path of the web directory.
-	WebDir string
+	// The function that returns the path of the web directory.
+	WebDir func() string
+
+	once        sync.Once
+	webDir      string
+	fileHandler http.Handler
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("url:", r.URL)
-	fmt.Println("path:", r.URL.Path)
+	h.once.Do(h.initFileHandler)
 
-	w.WriteHeader(http.StatusNotImplemented)
+	path := filepath.Join(h.webDir, r.URL.Path)
+	if _, err := os.Stat(path); err == nil {
+		h.fileHandler.ServeHTTP(w, r)
+		return
+	}
+
+	w.WriteHeader(http.StatusNotFound)
+}
+
+func (h *Handler) initFileHandler() {
+	h.webDir = h.WebDir()
+
+	handler := http.FileServer(http.Dir(h.webDir))
+	handler = newGzipHandler(handler)
+	h.fileHandler = handler
 }
