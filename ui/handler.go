@@ -12,9 +12,6 @@ import (
 // Handler is a http handler that serves UI components created with this
 // package.
 type Handler struct {
-	// The name of the component to load when no path is specified.
-	DefaultCompo string
-
 	// The function that returns the path of the web directory.
 	WebDir func() string
 
