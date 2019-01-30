@@ -224,16 +224,18 @@ type MacPackage struct {
 	// The function to log events.
 	Log func(string, ...interface{})
 
-	name          string
-	workingDir    string
-	webDir        string
-	tmpDir        string
-	tmpExecutable string
-	contentsDir   string
-	macOSDir      string
-	resourcesDir  string
-	executable    string
-	settings      macSettings
+	name           string
+	workingDir     string
+	webDir         string
+	tmpDir         string
+	tmpExecutable  string
+	contentsDir    string
+	macOSDir       string
+	resourcesDir   string
+	executable     string
+	wasmMain       string
+	wasmExecutable string
+	settings       macSettings
 }
 
 func (pkg *MacPackage) init() (err error) {
@@ -275,6 +277,8 @@ func (pkg *MacPackage) init() (err error) {
 	pkg.macOSDir = filepath.Join(pkg.Output, "Contents", "MacOS")
 	pkg.resourcesDir = filepath.Join(pkg.Output, "Contents", "Resources")
 	pkg.executable = filepath.Join(pkg.Output, "Contents", "MacOS", execName)
+	pkg.wasmMain = filepath.Join(pkg.webDir, "main.go")
+	pkg.wasmExecutable = filepath.Join(pkg.webDir, "ui.wasm")
 	return nil
 }
 
@@ -310,13 +314,17 @@ func (pkg *MacPackage) Build(ctx context.Context) error {
 		return err
 	}
 
+	if err := pkg.buildGoWebAssembly(ctx); err != nil {
+		return err
+	}
+
 	pkg.Log("reading settings")
 	if err := pkg.readSettings(ctx); err != nil {
 		return err
 	}
 
-	pkg.Log("syncing resources")
-	if err := pkg.syncResources(); err != nil {
+	pkg.Log("syncing web directory")
+	if err := pkg.syncWebDirectory(); err != nil {
 		return err
 	}
 
@@ -408,6 +416,47 @@ func (pkg *MacPackage) buildExecutable(ctx context.Context) error {
 	return file.Copy(pkg.executable, pkg.tmpExecutable)
 }
 
+func (pkg *MacPackage) buildGoWebAssembly(ctx context.Context) error {
+
+	if _, err := os.Stat(pkg.wasmMain); err != nil {
+		// No go web assembly code to build.
+		return nil
+	}
+
+	pkg.Log("building web assembly executable")
+
+	os.Setenv("GOOS", "js")
+	os.Setenv("GOARCH", "wasm")
+	defer os.Unsetenv("GOOS")
+	defer os.Unsetenv("GOARCH")
+
+	args := []string{
+		"go", "build",
+		"-o", pkg.wasmExecutable,
+	}
+
+	if pkg.Verbose {
+		args = append(args, "-v")
+	}
+
+	if pkg.Force {
+		args = append(args, "-a")
+	}
+
+	if pkg.Race {
+		args = append(args, "-race")
+	}
+
+	args = append(args, pkg.wasmMain)
+	if err := execute(ctx, args[0], args[1:]...); err != nil {
+		return err
+	}
+
+	wasmExecJsSrc := filepath.Join(runtime.GOROOT(), "misc", "wasm", "wasm_exec.js")
+	wasmExecJsDst := filepath.Join(pkg.webDir, "wasm_exec.js")
+	return file.Copy(wasmExecJsDst, wasmExecJsSrc)
+}
+
 func (pkg *MacPackage) readSettings(ctx context.Context) error {
 	settingsPath := filepath.Join(pkg.tmpDir, "settings.json")
 	defer os.RemoveAll(settingsPath)
@@ -463,7 +512,7 @@ func (pkg *MacPackage) readSettings(ctx context.Context) error {
 	return nil
 }
 
-func (pkg *MacPackage) syncResources() error {
+func (pkg *MacPackage) syncWebDirectory() error {
 	return file.Sync(pkg.resourcesDir, pkg.webDir)
 }
 
@@ -620,6 +669,14 @@ func (pkg *MacPackage) Clean(ctx context.Context) error {
 	pkg.Log("removing %s", pkg.Output)
 	if err := os.RemoveAll(pkg.Output); err != nil {
 		return err
+	}
+
+	if _, err := os.Stat(pkg.wasmExecutable); err == nil {
+		pkg.Log("removing %s", pkg.wasmExecutable)
+
+		if err := os.RemoveAll(pkg.wasmExecutable); err != nil {
+			return err
+		}
 	}
 
 	pkg.Log("removing %s", pkg.tmpDir)

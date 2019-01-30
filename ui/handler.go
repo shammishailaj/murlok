@@ -1,4 +1,4 @@
-// +build !js
+// +build !wasm
 
 package ui
 
@@ -14,6 +14,9 @@ import (
 type Handler struct {
 	// The function that returns the path of the web directory.
 	WebDir func() string
+
+	// The path of the go web assembly file to serve. Default is ui.wasm.
+	Wasm string
 
 	once        sync.Once
 	webDir      string
@@ -34,6 +37,10 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) initFileHandler() {
 	h.webDir = h.WebDir()
+
+	if h.Wasm == "" {
+		h.Wasm = "ui.wasm"
+	}
 
 	handler := http.FileServer(http.Dir(h.webDir))
 	handler = newGzipHandler(handler)

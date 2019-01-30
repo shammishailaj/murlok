@@ -1,0 +1,3 @@
+// +build wasm
+
+package ui
