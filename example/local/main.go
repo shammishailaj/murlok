@@ -12,5 +12,5 @@ func main() {
 		WebDir: murlok.WebDir,
 	})
 
-	murlok.Run("/logo.png")
+	murlok.Run("/")
 }
