@@ -1,6 +1,6 @@
 // +build !wasm
 
-package ui
+package app
 
 import (
 	"compress/gzip"

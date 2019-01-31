@@ -1,6 +1,6 @@
 // +build !wasm
 
-package ui
+package app
 
 import (
 	"net/http"
@@ -12,11 +12,23 @@ import (
 // Handler is a http handler that serves UI components created with this
 // package.
 type Handler struct {
+	// The app author.
+	Author string
+
+	// The app description.
+	Description string
+
+	// The app keywords.
+	Keywords []string
+
+	// The app name.
+	Name string
+
+	// The path of the go web assembly file to serve. Default is app.wasm.
+	Wasm string
+
 	// The function that returns the path of the web directory.
 	WebDir func() string
-
-	// The path of the go web assembly file to serve. Default is ui.wasm.
-	Wasm string
 
 	once        sync.Once
 	webDir      string
@@ -39,7 +51,7 @@ func (h *Handler) initFileHandler() {
 	h.webDir = h.WebDir()
 
 	if h.Wasm == "" {
-		h.Wasm = "ui.wasm"
+		h.Wasm = "app.wasm"
 	}
 
 	handler := http.FileServer(http.Dir(h.webDir))

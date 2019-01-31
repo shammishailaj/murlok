@@ -278,7 +278,7 @@ func (pkg *MacPackage) init() (err error) {
 	pkg.resourcesDir = filepath.Join(pkg.Output, "Contents", "Resources")
 	pkg.executable = filepath.Join(pkg.Output, "Contents", "MacOS", execName)
 	pkg.wasmMain = filepath.Join(pkg.webDir, "main.go")
-	pkg.wasmExecutable = filepath.Join(pkg.webDir, "ui.wasm")
+	pkg.wasmExecutable = filepath.Join(pkg.webDir, "app.wasm")
 	return nil
 }
 
