@@ -10,6 +10,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestHandlerNewFileHandler(t *testing.T) {
+	h := &Handler{}
+	assert.NotNil(t, h.newFileHandler())
+}
+
 func TestHandlerNewPage(t *testing.T) {
 	h := &Handler{
 		Author:      "Maxence",

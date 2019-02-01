@@ -68,14 +68,14 @@ func (h *Handler) init() {
 	}
 
 	h.webDir = h.WebDir()
+	h.fileHandler = h.newFileHandler()
 	h.page = h.newPage()
-	h.initFileHandler()
 }
 
-func (h *Handler) initFileHandler() {
+func (h *Handler) newFileHandler() http.Handler {
 	handler := http.FileServer(http.Dir(h.webDir))
 	handler = newGzipHandler(handler)
-	h.fileHandler = handler
+	return handler
 }
 
 func (h *Handler) newPage() []byte {
