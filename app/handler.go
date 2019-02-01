@@ -131,7 +131,7 @@ func (h *Handler) filepathsFromDir(dirPath string, extensions ...string) []strin
 			return nil
 		}
 
-		path = strings.TrimLeft(path, h.webDir)
+		path = path[len(h.webDir):]
 		filepaths = append(filepaths, path)
 		return nil
 	}
