@@ -24,7 +24,8 @@ type Handler struct {
 	// The app description.
 	Description string
 
-	// The path of the icon relative to the web directory.
+	// The path of the icon relative to the web directory. Default is
+	// "/logo.png".
 	Icon string
 
 	// The app keywords.
@@ -33,7 +34,7 @@ type Handler struct {
 	// The app name.
 	Name string
 
-	// The path of the go web assembly file to serve. Default is app.wasm.
+	// The path of the go web assembly file to serve. Default is "/app.wasm".
 	Wasm string
 
 	// The function that returns the path of the web directory.

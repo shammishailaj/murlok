@@ -10,6 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestHandlerInit(t *testing.T) {
+	h := &Handler{
+		WebDir: func() string { return "test" },
+	}
+	h.init()
+}
+
 func TestHandlerNewFileHandler(t *testing.T) {
 	h := &Handler{}
 	assert.NotNil(t, h.newFileHandler())
