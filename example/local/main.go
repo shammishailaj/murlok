@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"github.com/maxence-charriere/murlok"
-	"github.com/maxence-charriere/murlok/ui"
+	"github.com/maxence-charriere/murlok/app"
 )
 
 func main() {
-	http.Handle("/", &ui.Handler{
+	http.Handle("/", &app.Handler{
 		WebDir: murlok.WebDir,
 	})
 
-	murlok.Run("/logo.png")
+	murlok.Run("/")
 }
