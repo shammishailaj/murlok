@@ -10,7 +10,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFilepathsFromDir(t *testing.T) {
+func TestHandlerNewPage(t *testing.T) {
+	h := &Handler{
+		Author:      "Maxence",
+		Description: "Unit test",
+		Icon:        "logo.png",
+		Keywords:    []string{"unit", "test"},
+		Name:        "Unit test",
+		Wasm:        "app.wasm",
+	}
+
+	t.Log(string(h.newPage()))
+}
+
+func TestHandlerFilepathsFromDir(t *testing.T) {
 	dir := "css-test"
 	os.MkdirAll(dir, 0777)
 	defer os.RemoveAll(dir)
@@ -19,6 +32,7 @@ func TestFilepathsFromDir(t *testing.T) {
 		webDir: dir,
 	}
 
+	assert.Len(t, h.filepathsFromDir("unknown", ".css"), 0)
 	assert.Len(t, h.filepathsFromDir(dir, ".css"), 0)
 
 	os.MkdirAll(filepath.Join(dir, "sub"), 0777)

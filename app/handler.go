@@ -60,17 +60,16 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) init() {
 	if h.Wasm == "" {
-		h.Wasm = "app.wasm"
+		h.Wasm = "/app.wasm"
 	}
 
 	if h.Icon == "" {
-		h.Icon = "logo.png"
+		h.Icon = "/logo.png"
 	}
 
 	h.webDir = h.WebDir()
-
+	h.page = h.newPage()
 	h.initFileHandler()
-	h.initPage()
 }
 
 func (h *Handler) initFileHandler() {
@@ -79,7 +78,7 @@ func (h *Handler) initFileHandler() {
 	h.fileHandler = handler
 }
 
-func (h *Handler) initPage() {
+func (h *Handler) newPage() []byte {
 	b := bytes.Buffer{}
 	tmpl := template.Must(template.New("page").Parse(htmlTmpl))
 
@@ -107,7 +106,7 @@ func (h *Handler) initPage() {
 		panic(err)
 	}
 
-	h.page = b.Bytes()
+	return b.Bytes()
 }
 
 func (h *Handler) filepathsFromDir(dirPath string, extensions ...string) []string {
